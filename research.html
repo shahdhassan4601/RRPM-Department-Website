@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scientific Research</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.2.0/dist/vue.global.min.js"></script>
+</head>
+<body>
+  <div id="app" class="container my-5">
+    <h1 class="mb-4">Scientific Research</h1>
+    <p class="mb-4"><strong>Highlighted Topics:</strong> 
+      <span class="badge bg-secondary">Drug development</span> 
+      <span class="badge bg-secondary">Diabetes</span> 
+      <span class="badge bg-secondary">Rare diseases</span>
+    </p>
+    
+    <!-- Search and Filters -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <input type="text" class="form-control" v-model="searchQuery" placeholder="Search...">
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" v-model="selectedAuthor">
+          <option selected>Filter by Author</option>
+          <option v-for="author in authors" :key="author" :value="author">{{ author }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" v-model="selectedDate">
+          <option selected>Filter by Date</option>
+          <option value="Newest">Newest</option>
+          <option value="Oldest">Oldest</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Articles -->
+    <div v-for="article in filteredArticles" :key="article.id" class="border-bottom pb-3 mb-3">
+      <h5>{{ article.title }}</h5>
+      <p class="text-muted">
+        Authors: {{ article.authors }} | Published: {{ article.published }} | Organization: {{ article.organization }}
+      </p>
+      <p>{{ article.description }}</p>
+    </div>
+    
+    <!-- Read More Articles -->
+    <div class="text-center mt-4">
+      <a href="#" class="btn btn-primary">Read More Articles</a>
+    </div>
+  </div>
+
+  <!-- Vue.js App -->
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          searchQuery: '',
+          selectedAuthor: '',
+          selectedDate: '',
+          authors: ['Author 1', 'Author 2', 'Author 3'],
+          articles: [
+            { id: 1, title: 'Minim anim pariatur magna duis sit et dolor inci', authors: 'John Doe, Jane Smith', published: 'March 15, 2025', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
+            { id: 2, title: 'Aliquip magna adipisicing nostrud deserunt offic', authors: 'John Doe, Jane Smith', published: 'March 16, 2025', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
+            { id: 3, title: 'Irure voluptate id culpa minim adipisicing occae', authors: 'Jane Smith', published: 'March 17, 2025', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
+            // More articles...
+          ],
+        };
+      },
+      computed: {
+        filteredArticles() {
+          return this.articles.filter(article => {
+            // Filter by search query
+            const matchesSearch = article.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+            
+            // Filter by author
+            const matchesAuthor = this.selectedAuthor ? article.authors.includes(this.selectedAuthor) : true;
+            
+            // Filter by date
+            let matchesDate = true;
+            if (this.selectedDate === 'Newest') {
+              matchesDate = new Date(article.published) >= new Date('March 15, 2025');
+            } else if (this.selectedDate === 'Oldest') {
+              matchesDate = new Date(article.published) <= new Date('March 16, 2025');
+            }
+            
+            return matchesSearch && matchesAuthor && matchesDate;
+          });
+        },
+      },
+    });
+    app.mount("#app");
+  </script>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
