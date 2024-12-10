@@ -24,13 +24,13 @@
       </div>
       <div class="col-md-3">
         <select class="form-select" v-model="selectedAuthor">
-          <option selected>Filter by Author</option>
-          <option v-for="author in authors" :key="author" :value="author">{{ author }}</option>
+          <option value="">Filter by Author</option>
+          <option v-for="author in uniqueAuthors" :key="author" :value="author">{{ author }}</option>
         </select>
       </div>
       <div class="col-md-3">
         <select class="form-select" v-model="selectedDate">
-          <option selected>Filter by Date</option>
+          <option value="">Filter by Date</option>
           <option value="Newest">Newest</option>
           <option value="Oldest">Oldest</option>
         </select>
@@ -60,32 +60,33 @@
           searchQuery: '',
           selectedAuthor: '',
           selectedDate: '',
-          authors: ['Author 1', 'Author 2', 'Author 3'],
           articles: [
-            { id: 1, title: 'Minim anim pariatur magna duis sit et dolor inci', authors: 'John Doe, Jane Smith', published: 'March 15, 2025', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
-            { id: 2, title: 'Aliquip magna adipisicing nostrud deserunt offic', authors: 'John Doe, Jane Smith', published: 'March 16, 2025', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
-            { id: 3, title: 'Irure voluptate id culpa minim adipisicing occae', authors: 'Jane Smith', published: 'March 17, 2025', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
-            // More articles...
+            { id: 1, title: 'Minim anim pariatur magna duis sit et dolor inci', authors: 'John Doe, Jane Smith', published: '2025-03-15', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
+            { id: 2, title: 'Aliquip magna adipisicing nostrud deserunt offic', authors: 'John Doe, Jane Smith', published: '2025-03-16', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
+            { id: 3, title: 'Irure voluptate id culpa minim adipisicing occae', authors: 'Jane Smith', published: '2025-03-17', organization: 'Quantum Research Institute', description: 'Tempor commodo veniam voluptate eiusmod fugiat esse est consectetur ut magna reprehenderit et elit id cupidatat reprehenderit anim dolor.' },
           ],
         };
       },
       computed: {
+        // استخراج قائمة المؤلفين الفريدة
+        uniqueAuthors() {
+          const authorsSet = new Set();
+          this.articles.forEach(article => {
+            article.authors.split(', ').forEach(author => authorsSet.add(author.trim()));
+          });
+          return [...authorsSet];
+        },
+        // التصفية بناءً على المعايير
         filteredArticles() {
           return this.articles.filter(article => {
-            // Filter by search query
             const matchesSearch = article.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-            
-            // Filter by author
             const matchesAuthor = this.selectedAuthor ? article.authors.includes(this.selectedAuthor) : true;
-            
-            // Filter by date
             let matchesDate = true;
             if (this.selectedDate === 'Newest') {
-              matchesDate = new Date(article.published) >= new Date('March 15, 2025');
+              matchesDate = new Date(article.published) >= new Date('2025-03-15');
             } else if (this.selectedDate === 'Oldest') {
-              matchesDate = new Date(article.published) <= new Date('March 16, 2025');
+              matchesDate = new Date(article.published) <= new Date('2025-03-16');
             }
-            
             return matchesSearch && matchesAuthor && matchesDate;
           });
         },
