@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app" class="container py-5">
+        <h1 class="mb-4">Unit</h1>
+
+        <!-- Unit Details -->
+        <div class="mb-4">
+            <label class="form-label">Unit name</label>
+            <input v-model="unit.name" type="text" class="form-control" placeholder="Enter the name of the unit">
+
+            <label class="form-label mt-3">Address</label>
+            <input v-model="unit.address" type="text" class="form-control" placeholder="Enter the unit's address">
+
+            <label class="form-label mt-3">Map location</label>
+            <div class="border p-3">Use the map selector</div>
+        </div>
+
+        <!-- Clinics Section -->
+        <h3 class="mb-3">Clinics</h3>
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Clinic name</label>
+                <input v-model="clinic.name" type="text" class="form-control" placeholder="Brief description">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Working hours</label>
+                <div class="input-group">
+                    <input v-model="clinic.hours.from" type="time" class="form-control">
+                    <span class="input-group-text">to</span>
+                    <input v-model="clinic.hours.to" type="time" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Services</label>
+                <input v-model="clinic.services" type="text" class="form-control" placeholder="Enter services (comma separated)">
+            </div>
+
+            <div class="col-md-1">
+                <button @click="addClinic" class="btn btn-primary w-100">Add</button>
+            </div>
+        </div>
+
+        <!-- Clinics Table -->
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Clinic Name</th>
+                    <th>Working Hours</th>
+                    <th>Services</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(clinic, index) in unit.clinics" :key="index">
+                    <td>{{ clinic.name }}</td>
+                    <td>{{ clinic.hours.from }} - {{ clinic.hours.to }}</td>
+                    <td>{{ clinic.services }}</td>
+                    <td>
+                        <button @click="editClinic(index)" class="btn btn-warning btn-sm">Edit</button>
+                        <button @click="deleteClinic(index)" class="btn btn-danger btn-sm">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Unit Controls -->
+        <div class="mt-4">
+            <label class="form-label">Unit working hours:</label>
+            <div class="input-group">
+                <input v-model="unit.hours.from" type="time" class="form-control">
+                <span class="input-group-text">to</span>
+                <input v-model="unit.hours.to" type="time" class="form-control">
+            </div>
+
+            <div class="mt-3">
+                <button @click="addUnit" class="btn btn-primary">Add</button>
+                <button @click="clearFields" class="btn btn-secondary">Clear</button>
+            </div>
+        </div>
+
+        <!-- Units List -->
+        <h3 class="mt-5">Units List</h3>
+        <div v-for="(unit, index) in units" :key="index" class="border p-3 mb-3">
+            <h5>{{ unit.name }}</h5>
+            <p>{{ unit.address }}</p>
+            <p>Working Hours: {{ unit.hours.from }} - {{ unit.hours.to }}</p>
+
+            <h6>Clinics:</h6>
+            <ul>
+                <li v-for="(clinic, idx) in unit.clinics" :key="idx">
+                    {{ clinic.name }} ({{ clinic.hours.from }} - {{ clinic.hours.to }}) - Services: {{ clinic.services }}
+                </li>
+            </ul>
+
+            <button @click="editUnit(index)" class="btn btn-warning btn-sm">Edit</button>
+            <button @click="deleteUnit(index)" class="btn btn-danger btn-sm">Delete</button>
+        </div>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    unit: {
+                        name: '',
+                        address: '',
+                        hours: { from: '', to: '' },
+                        clinics: []
+                    },
+                    clinic: {
+                        name: '',
+                        hours: { from: '', to: '' },
+                        services: ''
+                    },
+                    units: [],
+                    editIndex: null
+                };
+            },
+            methods: {
+                addClinic() {
+                    if (this.clinic.name && this.clinic.hours.from && this.clinic.hours.to && this.clinic.services) {
+                        this.unit.clinics.push({ ...this.clinic });
+                        this.clinic = { name: '', hours: { from: '', to: '' }, services: '' };
+                    }
+                },
+                deleteClinic(index) {
+                    this.unit.clinics.splice(index, 1);
+                },
+                addUnit() {
+                    if (this.unit.name && this.unit.address && this.unit.hours.from && this.unit.hours.to) {
+                        if (this.editIndex !== null) {
+                            this.units[this.editIndex] = { ...this.unit };
+                            this.editIndex = null;
+                        } else {
+                            this.units.push({ ...this.unit });
+                        }
+                        this.clearFields();
+                    }
+                },
+                deleteUnit(index) {
+                    this.units.splice(index, 1);
+                },
+                editUnit(index) {
+                    this.unit = { ...this.units[index] };
+                    this.editIndex = index;
+                },
+                clearFields() {
+                    this.unit = { name: '', address: '', hours: { from: '', to: '' }, clinics: [] };
+                    this.clinic = { name: '', hours: { from: '', to: '' }, services: '' };
+                    this.editIndex = null;
+                }
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+
+</html>
