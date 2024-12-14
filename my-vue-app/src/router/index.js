@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import SignInForm from '../views/SignInForm.vue';
+import LoginPage from '../views/SignInForm.vue';
 import UnitManager from '../views/UnitManager.vue';
 import ContactUs from '../views/ContactUs.vue'; 
 
 const routes = [
-  { path: '/', component: SignInForm }, // الصفحة الرئيسية
+  { path: '/', component: LoginPage }, // الصفحة الرئيسية
   { path: '/unit-manager', component: UnitManager }, 
   { path: '/contact-us', component: ContactUs } // تغيير المسار إلى الحروف الصغيرة
 ];

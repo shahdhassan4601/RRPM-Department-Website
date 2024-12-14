@@ -1,16 +1,26 @@
 <template>
-  <div>
-    
-    <router-link to="/">Go to Sign In</router-link> |
-<router-link to="/unit-manager">Go to Unit Manager</router-link> |
-<router-link to="/contact-us">Go to Contact Us</router-link>
+  <div id="app">
+    <!-- Header -->
+    <Header />
     
     <router-view />
+
+    <!-- Footer -->
+    <Footer />
   </div>
 </template>
 
 <script>
+import Header from './components/Navbar.vue'
+import Footer from './components/Footer.vue'
+
 export default {
-  name: "App"
-};
+  name: 'App',
+  components: {
+    Header,
+    Footer
+  }
+}
 </script>
+
+

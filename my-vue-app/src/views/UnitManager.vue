@@ -169,4 +169,12 @@
     }
   };
   </script>
+  <style scoped>
+   button {
+    margin-right: 10px; /* مسافة بين الأزرار */
+}
+
+
+
+</style>
   
