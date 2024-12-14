@@ -1,0 +1,43 @@
+body {
+    background-color: #F8F9FA; /* خلفية خفيفة */
+    color: #126782; /* اللون الأساسي */
+  }
+  header {
+    background-color: #023047; /* لون الهيدر */
+    color: #FFF;
+  }
+  .nav-link {
+    color: #8ECAE6!important;
+  }
+  main {
+    background-color: #FFF; /* لون خلفية الأقسام */
+  }
+  .unit-card, .activity-card, .insight-card {
+    border: 1px solid #219EBC;
+    border-radius: 10px;
+    background-color: #FFF;
+  }
+  button, .btn {
+    background-color: #FD9E02; /* اللون البرتقالي */
+    color: #fff; /* لون النص الأبيض */
+    border: none; /* إزالة الحدود */
+    padding: 10px 20px; /* ضبط الحشوة */
+    border-radius: 5px; /* حواف دائرية */
+    cursor: pointer; /* مؤشر عند التمرير */
+    font-size: 16px; /* حجم النص */
+    transition: background-color 0.3s ease; /* تأثير تغيير اللون */
+  }
+
+  button:hover, .btn:hover {
+    background-color: #FFB703; /* لون أفتح عند التمرير */
+  }
+  footer {
+    background-color: #023047;
+    color: #FFF;
+  }
+  footer a {
+    color: #8ECAE6 !important;
+  }
+  footer a:hover {
+    color: #fb0000;
+  }
