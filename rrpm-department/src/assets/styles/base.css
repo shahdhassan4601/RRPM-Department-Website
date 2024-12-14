@@ -2,13 +2,6 @@ body {
     background-color: #F8F9FA; /* خلفية خفيفة */
     color: #126782; /* اللون الأساسي */
   }
-  header {
-    background-color: #023047; /* لون الهيدر */
-    color: #FFF;
-  }
-  .nav-link {
-    color: #8ECAE6!important;
-  }
   main {
     background-color: #FFF; /* لون خلفية الأقسام */
   }
@@ -31,13 +24,4 @@ body {
   button:hover, .btn:hover {
     background-color: #FFB703; /* لون أفتح عند التمرير */
   }
-  footer {
-    background-color: #023047;
-    color: #FFF;
-  }
-  footer a {
-    color: #8ECAE6 !important;
-  }
-  footer a:hover {
-    color: #fb0000;
-  }
+ 
