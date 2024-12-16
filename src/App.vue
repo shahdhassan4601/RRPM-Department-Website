@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- إضافة الـ Navbar -->
-    <Navbar /> 
+    <Header /> 
     
     <nav>
       <router-link to="/activity">activity</router-link>
@@ -20,13 +20,13 @@
 
 <script>
 // استيراد الـ Navbar و الـ Footer
-import Navbar from './components/Navbar.vue';  
+import Header from './components/Navbar.vue';  
 import Footer from './components/Footer.vue';  
 
 export default {
   name: "App",
   components: {
-    Navbar,  // تسجيل الـ Navbar كمكون في App.vue
+    Header,  // تسجيل الـ Navbar كمكون في App.vue
     Footer,  // تسجيل الـ Footer كمكون في App.vue
   }
 };
