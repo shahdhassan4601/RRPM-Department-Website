@@ -10,7 +10,7 @@
             <li class="nav-item"><router-link to="/units" class="nav-link">Units</router-link></li>
             <li class="nav-item"><router-link to="/activities" class="nav-link">Activities</router-link></li>
             <li class="nav-item"><router-link to="/research" class="nav-link">Scientific Research</router-link></li>
-            <li class="nav-item"><router-link to="/contact" class="nav-link">Contact us</router-link></li>
+            <li class="nav-item"><router-link to="/contact-us" class="nav-link">Contact us</router-link></li>
           </ul>
         </nav>
         <select class="form-select form-select-sm w-auto">
