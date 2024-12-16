@@ -5,11 +5,11 @@
           <div class="col-md-4 text-start">
             <h5>Quick links</h5>
             <ul class="list-unstyled">
-              <li><a href="#" class="text-decoration-none">Home</a></li>
-              <li><a href="#" class="text-decoration-none">About us</a></li>
-              <li><a href="#" class="text-decoration-none">Units</a></li>
-              <li><a href="#" class="text-decoration-none">Activities</a></li>
-              <li><a href="#" class="text-decoration-none">Scientific Research</a></li>
+              <li class="nav-item"><router-link to="/aboutus" class="nav-link">About us</router-link></li>
+            <li class="nav-item"><router-link to="/units" class="nav-link">Units</router-link></li>
+            <li class="nav-item"><router-link to="/activities" class="nav-link">Activities</router-link></li>
+            <li class="nav-item"><router-link to="/research" class="nav-link">Scientific Research</router-link></li>
+            <li class="nav-item"><router-link to="/contact" class="nav-link">Contact us</router-link></li>
             </ul>
           </div>
           <div class="col-md-4 text-start">

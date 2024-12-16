@@ -1,11 +1,8 @@
 <template>
-    <div id="home">
-      <Header />
-  
+    <div id="home">  
       <!-- Hero Section -->
       <section class="py-5 text-center bg-light">
         <div class="container">
-          <h2 class="display-5">RRPM department</h2>
           <p class="lead">Aliquip fugiat ipsum nostrud ex et eu incididunt quis minim dolore exceptuer voluptate</p>
           <img src="https://via.placeholder.com/150x100" alt="Hero Image" class="img-fluid mt-3">
         </div>
@@ -63,12 +60,11 @@
         </div>
       </section>
   
-      <Footer />
     </div>
   </template>
   
   <script>
-  import Header from '../components/Header.vue';
+  import Header from '../components/Navbar.vue';
   import Footer from '../components/Footer.vue';
   
   export default {
@@ -97,11 +93,7 @@
     }
   };
   </script>
-  <script>
-  export default {
-    name: 'HomePage',
-  };
-  </script>
+ 
   
   <style scoped>
   /* Add your styles here */
