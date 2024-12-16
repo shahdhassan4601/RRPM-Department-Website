@@ -1,12 +1,15 @@
-<script setup>
-
-
-</script>
-
 <template>
-
+    <div id="app">
+    <main>
+      <!-- Vue Router will dynamically render the correct page here -->
+      <router-view />
+    </main>
+  </div>
 </template>
 
-<style>
+<script>
 
-</style>
+export default {
+  name: "App"
+};
+</script> 
