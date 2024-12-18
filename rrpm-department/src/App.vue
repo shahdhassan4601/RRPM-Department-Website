@@ -4,7 +4,6 @@
     <Header /> 
     
     <nav>
-      <router-link to="/Home"></router-link>
       <router-link to="/activities"></router-link>
       <router-link to="/aboutus"></router-link>
     </nav>
