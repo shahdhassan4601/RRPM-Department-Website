@@ -6,7 +6,7 @@ import GeneralActivities from '../views/Activities.vue';
 
 
 const routes = [
-  { path: '/home', name: 'home', component: Home },
+  { path: '/', name: 'home', component: Home },
   { path: '/aboutus', name: 'aboutus', component: AboutUs },
   { path: '/activities', name: 'genact', component: GeneralActivities },
 ];
