@@ -71,36 +71,71 @@ methods: {
 <style scoped>
 /* General Card Styling */
 .login-card {
-border: none;
-border-radius: 15px;
-max-width: 800px;
-width: 100%;
+  border: none;
+  border-radius: 15px;
+  max-width: 800px;
+  width: 100%;
 }
 
 .form-control {
-border-radius: 5px;
-height: 45px;
-font-size: 0.9rem;
+  border-radius: 5px;
+  height: 45px;
+  font-size: 0.9rem;
 }
 
 .btn {
-height: 45px;
-font-size: 1rem;
+  height: 45px;
+  font-size: 1rem;
 }
 
 .bg-light {
-background-color: #f8f9fa !important;
+  background-color: #f8f9fa !important;
 }
 
 .image-placeholder {
-width: 100px;
-height: 100px;
-display: flex;
-justify-content: center;
-align-items: center;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .btn-outline-secondary i {
-font-size: 1.2rem;
+  font-size: 1.2rem;
+}
+
+
+@media (max-width: 768px) {
+  .login-card {
+    max-width: 100%;
+  }
+
+  .no-gutters {
+    flex-direction: column;
+  }
+
+  .col-md-6 {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .bg-light {
+    padding: 20px;
+    justify-content: center;
+  }
+
+  img {
+    max-height: 150px;
+    width: auto;
+  }
+
+  .form-control {
+    font-size: 0.8rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    height: 40px;
+  }
 }
 </style>
