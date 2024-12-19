@@ -6,8 +6,14 @@
     <nav>
       <router-link to="/activity">activity</router-link>
       <router-link to="/research"></router-link>
-      <router-link to="/research_admin">research_admin</router-link>
+      <router-link to="/research_admin"></router-link>
       <router-link to="/units"></router-link>
+      <router-link to="/UnitManager"></router-link>
+      
+      
+      
+
+
     </nav>
 
     <!-- مكان عرض المحتوى الديناميكي -->

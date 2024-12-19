@@ -31,7 +31,7 @@
 
       <!-- Upload -->
       <div class="row g-3 mt-3">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <label for="upload" class="form-label">Relevant Images & Videos</label>
           <input
             type="file"
@@ -50,7 +50,7 @@
       <div class="mb-3">
         <label for="keywords" class="form-label">Keywords</label>
         <div class="d-flex flex-wrap gap-2">
-          <div v-for="keyword in researchData.keywords" :key="keyword" class="badge bg-primary">
+          <div v-for="keyword in researchData.keywords" :key="keyword" class="badge bg-primary" >
             {{ keyword }}
             <button type="button" class="btn-close btn-close-white ms-1" @click="removeKeyword(keyword)"></button>
           </div>
@@ -110,6 +110,9 @@ export default {
     }
   },
 
+
+  
+
   methods: {
     submitResearch() {
       // Validate title
@@ -124,9 +127,18 @@ export default {
           this.researches.push({ ...this.researchData });
         }
         localStorage.setItem("researches", JSON.stringify(this.researches));
-        this.resetForm();
-        alert("Research saved successfully!");
-
+        const researchDetails = `
+      Title: ${this.researchData.title}
+      Authors: ${this.researchData.authors}
+      Organization: ${this.researchData.organization}
+      Publication Date: ${this.researchData.publicationDate}
+      Keywords: ${this.researchData.keywords.join(", ")}
+    `;
+    
+    // Show alert with saved research details
+    alert(`Research saved successfully! \n\nDetails:\n${researchDetails}`);
+    
+    this.resetForm();
         // Redirect to the Research page after saving
         this.$router.push("/research");
       } else {
@@ -141,7 +153,8 @@ export default {
         organization: "",
         publicationDate: "",
         content: "",
-        keywords: []
+        keywords: [] ,
+        
       };
       this.editIndex = null;
       this.titleError = false;
@@ -169,6 +182,7 @@ export default {
         this.fileError = true;
       } else {
         this.fileError = false;
+       
       }
 
       // Further processing for valid files if needed
@@ -177,3 +191,49 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+
+.activity-card {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.status-badge {
+  border-radius: 12px;
+  font-size: 12px;
+  padding: 2px 8px;
+  color: #fff;
+}
+
+.status-ongoing {
+  background-color: #fd9e02;
+}
+
+.status-completed {
+  background-color: #126782;
+}
+
+.status-upcoming {
+  background-color: #219ebc;
+}
+.btn-success {
+  background-color: #20c997 !important; /* لون أخضر فاتح */
+  border-color: #20c997 !important;
+}
+
+
+
+.btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.btn-secondary {
+  background-color: #4f678d !important; /* لون أزرق */
+  border-color: #4f678d !important;
+}
+
+</style>
