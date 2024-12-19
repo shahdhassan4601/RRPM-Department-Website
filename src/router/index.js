@@ -8,7 +8,9 @@ import Units from '../Views/units.vue';
 const routes = [
   { path: '/activity', component: Activity },
   { path: '/research', component: Research },
-  { path: '/research_admin', component: Research_admin },
+  { path: '/add-research_admin', component: Research_admin },
+  { path: '/edit-research_admin/:index', component: Research_admin ,props: true,  },
+  
   { path: '/units', component: Units },
 ];
 
@@ -18,4 +20,4 @@ const router = createRouter({
   routes,
 });
 
-export default router;
+export default router
