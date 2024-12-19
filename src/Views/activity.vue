@@ -1,10 +1,11 @@
 <template>
-    <div class="container my-5">
+  <div class="container my-5">
     <h1 class="mb-4">Add Activity</h1>
     <form @submit.prevent="submitForm">
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input type="text" class="form-control" id="title" v-model="formData.title" placeholder="Enter activity title">
+        <div v-if="titleError" class="text-danger">Title is required and must be at least 3 characters.</div>
       </div>
 
       <!-- Dates and Times -->
@@ -31,20 +32,12 @@
       <div class="mt-3">
         <label for="location" class="form-label">Location</label>
         <input type="text" class="form-control" id="location" v-model="formData.location" placeholder="Input text">
+        <div v-if="locationError" class="text-danger">Location is required.</div>
       </div>
       
-      <!-- Status and Keywords -->
+      <!-- Keywords -->
       <div class="row g-3 mt-3">
-        <div class="col-md-6">
-          <label for="status" class="form-label">Status</label>
-          <select class="form-select" id="status" v-model="formData.status">
-            <option selected>Select status</option>
-            <option value="Planned">Planned</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
           <label for="keywords" class="form-label">Keywords</label>
 
           <div class="d-flex flex-wrap gap-2">
@@ -60,39 +53,53 @@
               type="text"
               class="form-control"
               id="keywords"
-              placeholder="Add or select a keyword"
+              placeholder="Add a keyword"
               v-model="newKeyword"
               @keyup.enter="addKeyword(newKeyword); newKeyword = ''"
             >
             <button type="button" class="btn btn-outline-primary" @click="addKeyword(newKeyword); newKeyword = ''">Add</button>
           </div>
-          <!-- Dropdown for Available Keywords -->
-          <select class="form-select mt-2" v-model="selectedKeyword" @change="addKeyword(selectedKeyword)">
-            <option value="" disabled selected>Select a keyword</option>
-            <option v-for="keyword in availableKeywords" :key="keyword" :value="keyword">
-              {{ keyword }}
-            </option>
-          </select>
-
-          <input type="text" class="form-control" id="keywords" v-model="formData.keywords" placeholder="Input text">
-
         </div>
+      </div>
+
+      <!-- Status -->
+      <div class="mt-3">
+        <label for="status" class="form-label">Status</label>
+        <input
+          type="text"
+          class="form-control"
+          id="status"
+          v-model="formData.status"
+          placeholder="Enter activity status (e.g. Planned, In Progress, Completed)"
+        >
+      </div>
+
+      <!-- Unit -->
+      <div class="mt-3">
+        <label for="unit" class="form-label">Unit</label>
+        <input
+          type="text"
+          class="form-control"
+          id="unit"
+          v-model="formData.unit"
+          placeholder="Enter unit name"
+        >
       </div>
       
       <!-- Upload and Unit -->
       <div class="row g-3 mt-3">
-        <div class="col-md-6">
-          <label for="upload" class="form-label">Relevant images & videos</label>
-          <input type="file" class="form-control" id="upload" multiple @change="handleFiles">
-          <small class="text-muted">*Maximum 4 images</small>
-        </div>
-        <div class="col-md-6">
-          <label for="unit" class="form-label">Unit</label>
-          <select class="form-select" id="unit" v-model="formData.unit">
-            <option selected>Select unit</option>
-            <option value="Unit 1">Unit 1</option>
-            <option value="Unit 2">Unit 2</option>
-          </select>
+        <div class="col-md-12">
+          <label for="upload" class="form-label">Relevant Images & Videos</label>
+          <input
+            type="file"
+            class="form-control"
+            id="upload"
+            multiple
+            @change="handleFiles"
+            accept="image/*,video/*"
+          />
+          <small class="text-muted">*Maximum 4 files (images or videos)</small>
+          <div v-if="fileError" class="text-danger">Only images and videos are allowed!</div>
         </div>
       </div>
       
@@ -137,15 +144,12 @@
       </ul>
     </div>
   </div>
+</template>
 
-
-  
-  </template>
-  
-  <script>
-  export default {
-    name: "Activity",
-    data() {
+<script>
+export default {
+  name: "Activity",
+  data() {
     return {
       formData: {
         title: '',
@@ -154,23 +158,27 @@
         startTime: '',
         endTime: '',
         location: '',
-        status: '',
+        status: '', // User can input the status
+        unit: '', // User can input the unit
         keywords: [], // Keywords stored as an array
-        unit: '',
         summary: '',
         detailedDescription: '',
         files: []
       },
       activities: JSON.parse(localStorage.getItem('activities')) || [],
       newKeyword: '', // For adding a new keyword
-      selectedKeyword: '', // For selecting a keyword from the dropdown
-      availableKeywords: ['Keyword 1', 'Keyword 2', 'Keyword 3'], // Example available keywords
-      editIndex: null // Index of the activity being edited
+      editIndex: null, // Index of the activity being edited
+      titleError: false, // Error state for title field
+      locationError: false, // Error state for location field
+      fileError: false // Error state for file uploads
     };
   },
   methods: {
     submitForm() {
-      if (this.formData.title && this.formData.startDate && this.formData.summary) {
+      this.titleError = !this.formData.title || this.formData.title.length < 3;
+      this.locationError = !this.formData.location;
+
+      if (this.formData.title && this.formData.title.length >= 3 && this.formData.location) {
         if (this.editIndex !== null) {
           this.activities[this.editIndex] = { ...this.formData };
           this.editIndex = null; // Reset edit index
@@ -202,16 +210,17 @@
         startTime: '',
         endTime: '',
         location: '',
-        status: '',
+        status: '', // Reset status input
+        unit: '', // Reset unit input
         keywords: [], // Reset keywords array
-        unit: '',
         summary: '',
         detailedDescription: '',
         files: []
       };
       this.newKeyword = ''; // Reset new keyword input
-      this.selectedKeyword = ''; // Reset selected keyword
       this.editIndex = null; // Reset edit index
+      this.titleError = false; // Reset title error
+      this.locationError = false; // Reset location error
     },
     addKeyword(keyword) {
       if (keyword && !this.formData.keywords.includes(keyword)) {
@@ -225,9 +234,20 @@
       }
     },
     handleFiles(event) {
-      this.formData.files = Array.from(event.target.files);
-    }
-  }};
+      const files = Array.from(event.target.files);
+      const validFiles = files.filter(
+        file => file.type.startsWith("image/") || file.type.startsWith("video/") 
+      );
 
+      if (validFiles.length !== files.length) {
+        this.fileError = true;
+      } else {
+        this.fileError = false;
+      }
+
+      // Further processing for valid files if needed
+      console.log("Valid files:", validFiles);
+    }
+  }
+};
 </script>
-  
