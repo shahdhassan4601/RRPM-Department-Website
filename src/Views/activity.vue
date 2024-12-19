@@ -123,7 +123,7 @@
     </form>
 
     <!-- Display Added Activities -->
-    <div class="mt-5">
+    <!--<div class="mt-5">
       <h3>Added Activities</h3>
       <ul class="list-group">
         <li v-for="(activity, index) in activities" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
@@ -142,7 +142,8 @@
           </div>
         </li>
       </ul>
-    </div>
+    </div>-->
+
   </div>
 </template>
 
@@ -173,6 +174,18 @@ export default {
       fileError: false // Error state for file uploads
     };
   },
+
+  created() {
+    // الحصول على index من الـ route
+    const index = this.$route.params.index;
+
+    // التحقق إذا كان الـ index موجودا
+    if (index !== undefined && this.activities[index]) {
+      this.formData = { ...this.activities[index] };
+      this.editIndex = index;
+    }
+  },
+
   methods: {
     submitForm() {
       this.titleError = !this.formData.title || this.formData.title.length < 3;
@@ -186,22 +199,29 @@ export default {
           this.activities.push({ ...this.formData });
         }
         localStorage.setItem('activities', JSON.stringify(this.activities)); // Save to localStorage
-        this.resetForm(); // Reset form after submission
-        alert("Activity saved successfully!");
-      } else {
-        alert("Please fill out the required fields.");
-      }
-    },
-    deleteActivity(index) {
-      if (confirm("Are you sure you want to delete this activity?")) {
-        this.activities.splice(index, 1); // Remove activity from list
-        localStorage.setItem('activities', JSON.stringify(this.activities)); // Update localStorage
-      }
-    },
-    editActivity(index) {
-      this.formData = { ...this.activities[index] }; // Copy activity data to form
-      this.editIndex = index; // Save the index for editing
-    },
+
+
+       const activityDetails = `
+      Title: ${this.formData.title}
+      Start Date: ${this.formData.startDate}
+      End Date: ${this.formData.endDate}
+      Location: ${this.formData.location}
+      Status: ${this.formData.status}
+      Unit: ${this.formData.unit}
+      Keywords: ${this.formData.keywords.join(', ')}
+      Summary: ${this.formData.summary}
+    `;
+    
+    // إظهار alert مع تفاصيل النشاط المحفوظ
+    alert(`Activity saved successfully!\n\nDetails:\n${activityDetails}`);
+
+    this.resetForm(); // إعادة تعيين النموذج بعد الحفظ
+    this.$router.push("/Activities"); // إعادة التوجيه إلى صفحة الأنشطة
+  } else {
+    alert("Please fill out the required fields.");
+  }
+},
+    
     resetForm() {
       this.formData = {
         title: '',
@@ -250,4 +270,50 @@ export default {
     }
   }
 };
-</script>
+</script> 
+
+<style scoped>
+
+.activity-card {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.status-badge {
+  border-radius: 12px;
+  font-size: 12px;
+  padding: 2px 8px;
+  color: #fff;
+}
+
+.status-ongoing {
+  background-color: #fd9e02;
+}
+
+.status-completed {
+  background-color: #126782;
+}
+
+.status-upcoming {
+  background-color: #219ebc;
+}
+.btn-success {
+  background-color: #20c997 !important; /* لون أخضر فاتح */
+  border-color: #20c997 !important;
+}
+
+
+
+.btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.btn-secondary {
+  background-color: #4f678d !important; /* لون أزرق */
+  border-color: #4f678d !important;
+}
+
+</style>

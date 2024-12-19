@@ -8,7 +8,12 @@
       <router-link to="/research">Research</router-link>
       <router-link to="/research_admin">Research_admin</router-link>
       <router-link to="/units">Units</router-link>
+      <router-link to="/UnitManager"></router-link>
       
+      
+      
+
+
     </nav>
     <router-view></router-view> <!-- مكان عرض المحتوى الديناميكي -->
   </div>
