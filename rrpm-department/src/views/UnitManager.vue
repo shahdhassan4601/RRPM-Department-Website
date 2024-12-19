@@ -10,8 +10,8 @@
         <label class="form-label mt-3">Address</label>
         <input v-model="unit.address" type="text" class="form-control" placeholder="Enter the unit's address">
   
-        <label class="form-label mt-3">Map location</label>
-        <div class="border p-3">Use the map selector</div>
+        <!--  <label class="form-label mt-3">Map location</label>
+        <div class="border p-3">Use the map selector</div> -->
       </div>
   
       <!-- Clinics Section -->
@@ -118,16 +118,16 @@
         },
         units: [],
         editIndex: null,
-        editClinicIndex: null // جديد: لتعقب العيادة التي يتم تعديلها
+        editClinicIndex: null 
       };
     },
     methods: {
       addClinic() {
         if (this.clinic.name && this.clinic.hours.from && this.clinic.hours.to && this.clinic.services) {
           if (this.editClinicIndex !== null) {
-            // تحديث بيانات العيادة الحالية
+
             this.unit.clinics[this.editClinicIndex] = { ...this.clinic };
-            this.editClinicIndex = null; // إعادة تعيين المؤشر
+            this.editClinicIndex = null; 
           } else {
             this.unit.clinics.push({ ...this.clinic });
           }
@@ -138,9 +138,9 @@
         this.unit.clinics.splice(index, 1);
       },
       editClinic(index) {
-        // جلب بيانات العيادة للنموذج
+       
         this.clinic = { ...this.unit.clinics[index] };
-        this.editClinicIndex = index; // حفظ المؤشر للعيادة التي يتم تعديلها
+        this.editClinicIndex = index; 
       },
       addUnit() {
         if (this.unit.name && this.unit.address && this.unit.hours.from && this.unit.hours.to) {
@@ -164,14 +164,14 @@
         this.unit = { name: '', address: '', hours: { from: '', to: '' }, clinics: [] };
         this.clinic = { name: '', hours: { from: '', to: '' }, services: '' };
         this.editIndex = null;
-        this.editClinicIndex = null; // إعادة تعيين المؤشر عند مسح البيانات
+        this.editClinicIndex = null;
       }
     }
   };
   </script>
   <style scoped>
    button {
-    margin-right: 10px; /* مسافة بين الأزرار */
+    margin-right: 10px; 
 }
 
 
