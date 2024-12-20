@@ -95,69 +95,27 @@ export default {
     data() {
         return {
             research: {
-                title: {
-                    en: "Advancements in Rheumatology",
-                    ar: "التطورات في علم الروماتيزم",
-                },
-                author: {
-                    en: "Dr. John Doe",
-                    ar: "د. جون دو",
-                },
-                publishDate: {
-                    en: "Publish on 15 March, 2025",
-                    ar: "تم النشر في 15 مارس، 2025",
-                },
-                image: "https://via.placeholder.com/600x400?text=Research+Image", // If available
-                content: {
-                    en: `This is the detailed content of the research. It discusses various aspects of rheumatology. The research explores the new advancements and methodologies used in the field. It's an extensive study that contributes to improving patient care and treatment outcomes.
-          
-          The content spans several subtopics, including early detection, treatment strategies, and case studies.
-          
-          The research is based on extensive data and clinical trials.`,
-                    ar: `هذا هو المحتوى التفصيلي للبحث. يناقش جوانب مختلفة من الروماتيزم. يستعرض البحث التقدمات والمنهجيات الجديدة المستخدمة في هذا المجال. إنه دراسة شاملة تساهم في تحسين رعاية المرضى ونتائج العلاج.
-          
-          يمتد المحتوى عبر عدة مواضيع فرعية، بما في ذلك الكشف المبكر، استراتيجيات العلاج، ودراسات الحالة.
-          
-          يعتمد البحث على بيانات شاملة وتجارب سريرية.`,
-                },
-                keywords: {
-                    en: [
-                        "Rheumatology",
-                        "Advancements",
-                        "Treatment",
-                        "Patient Care",
-                    ],
-                    ar: ["روماتيزم", "تطورات", "علاج", "رعاية المرضى"],
-                },
+                title: "",
+                authors: "",
+                organization: "",
+                publicationDate: "",
+                content: "",
+                keywords: [],
             },
-            relatedResearchTitle: {
-                en: "Related Research",
-                ar: "أبحاث مرتبطة",
-            },
-            relatedResearch: [
-                {
-                    id: 1, // Unique identifier for each research
-                    title: {
-                        en: "Research on New Arthritis Treatments",
-                        ar: "بحث حول العلاجات الجديدة لالتهاب المفاصل",
-                    },
-                },
-                {
-                    id: 2,
-                    title: {
-                        en: "Rheumatoid Arthritis: Causes and Solutions",
-                        ar: "التهاب المفاصل الروماتويدي: الأسباب والحلول",
-                    },
-                },
-                {
-                    id: 3,
-                    title: {
-                        en: "Exploring New Diagnostic Tools for Rheumatology",
-                        ar: "استكشاف أدوات التشخيص الجديدة للروماتيزم",
-                    },
-                },
-            ],
+            relatedResearchTitle: "Related Research",
+            relatedResearch: [],
+            researches: JSON.parse(localStorage.getItem("researches")) || [],
+
         };
+    },
+    created() {
+        // الحصول على index من الـ route
+        const index = this.$route.params.id;
+
+        // التحقق إذا كان الـ index موجودا
+        if (index !== undefined && this.researches[index]) {
+            this.research = { ...this.researches[index] };
+        }
     },
     methods: {
         getTranslatedData(field) {
@@ -177,7 +135,6 @@ export default {
     },
 };
 </script>
-
 
 <style scoped>
 /* Title Styles */
@@ -233,17 +190,17 @@ export default {
     padding: 5px 10px;
 }
 .related-research-card {
-  background-color: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer; /* Make the cards look clickable */
-  transition: transform 0.2s ease, background-color 0.2s ease;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer; /* Make the cards look clickable */
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .related-research-card:hover {
-  transform: scale(1.05); /* Slightly enlarge on hover */
-  background-color: #e0e0e0;
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    background-color: #e0e0e0;
 }
 
 .related-research-card h6 {
@@ -251,7 +208,6 @@ export default {
     font-weight: 500;
     color: #023047;
 }
-
 
 /* Mobile View Adjustments */
 @media (max-width: 576px) {
