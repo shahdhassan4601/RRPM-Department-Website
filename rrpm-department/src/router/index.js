@@ -4,8 +4,8 @@ import UnitManager from '../views/UnitManager.vue';
 import ContactUs from '../views/ContactUs.vue'; 
 
 const routes = [
-// { path: '/', component: LoginPage }, 
-  { path: '/', component: UnitManager }, 
+ { path: '/', component: LoginPage }, 
+  { path: '/unitmanager', component: UnitManager }, 
   { path: '/contact-us', component: ContactUs }
 ];
 

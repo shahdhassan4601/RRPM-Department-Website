@@ -34,12 +34,7 @@
   </div>
   <div v-if="errors.clinic?.hours?.from" class="text-danger">Start time is required</div>
   <div v-if="errors.clinic?.hours?.to" class="text-danger">End time is required</div>
-  <div v-if="errors.clinic?.hours?.fromFormat" class="text-danger">
-    Please specify AM or PM for the start time.
-  </div>
-  <div v-if="errors.clinic?.hours?.toFormat" class="text-danger">
-    Please specify AM or PM for the end time.
-  </div>
+
 </div>
 
       <div class="col-md-4">
@@ -154,6 +149,7 @@
         hours: {
           from: false,
           to: false,
+          
         },
       },
       clinic: {
@@ -185,21 +181,13 @@
     this.errors.clinic.hours = this.errors.clinic.hours || {}; 
     this.errors.clinic.hours.from = true;
     hasError = true;
-} else if (!/AM|PM/i.test(this.clinic.hours.from)) {
-        this.errors.clinic.hours = this.errors.clinic.hours || {}; 
-        this.errors.clinic.hours.fromFormat = true;
-        hasError = true;
-    }
+} 
 
 if (!this.clinic.hours.to) {
     this.errors.clinic.hours = this.errors.clinic.hours || {}; 
     this.errors.clinic.hours.to = true;
     hasError = true;
-} else if (!/AM|PM/i.test(this.clinic.hours.to)) {
-        this.errors.clinic.hours = this.errors.clinic.hours || {}; 
-        this.errors.clinic.hours.toFormat = true;
-        hasError = true;
-    }
+} 
 
         if (!this.clinic.services) {
           this.errors.clinic.services = true;
