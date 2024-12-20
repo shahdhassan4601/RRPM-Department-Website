@@ -25,16 +25,22 @@
         <div v-if="errors.clinic?.name" class="text-danger">Clinic name is required</div>
       </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Working hours</label>
-        <div class="input-group">
-          <input v-model="clinic.hours.from" type="time" class="form-control" :class="{ 'is-invalid': errors.clinic?.hours?.from }">
-          <span class="input-group-text">to</span>
-          <input v-model="clinic.hours.to" type="time" class="form-control" :class="{ 'is-invalid': errors.clinic?.hours?.to }">
-        </div>
-        <div v-if="errors.clinic?.hours?.from" class="text-danger">Start time is required</div>
-        <div v-if="errors.clinic?.hours?.to" class="text-danger">End time is required</div>
-      </div>
+      <div class="col-md-3 clinic-working-hours">
+  <label class="form-label">Working hours</label>
+  <div class="input-group">
+    <input v-model="clinic.hours.from" type="time" class="form-control" :class="{ 'is-invalid': errors.clinic?.hours?.from }">    
+    <span class="input-group-text">to</span>
+        <input v-model="clinic.hours.to" type="time" class="form-control" :class="{ 'is-invalid': errors.clinic?.hours?.to }">
+  </div>
+  <div v-if="errors.clinic?.hours?.from" class="text-danger">Start time is required</div>
+  <div v-if="errors.clinic?.hours?.to" class="text-danger">End time is required</div>
+  <div v-if="errors.clinic?.hours?.fromFormat" class="text-danger">
+    Please specify AM or PM for the start time.
+  </div>
+  <div v-if="errors.clinic?.hours?.toFormat" class="text-danger">
+    Please specify AM or PM for the end time.
+  </div>
+</div>
 
       <div class="col-md-4">
         <label class="form-label">Services</label>
@@ -65,11 +71,24 @@
           <td>{{ clinic.services }}</td>
           <td>
             <button @click="editClinic(index)" class="btn btn-warning btn-sm">Edit</button>
-            <button @click="deleteClinic(index)" class="btn btn-danger btn-sm">Delete</button>
+            <button @click="confirmDeleteclinic(index)" class="btn btn-danger btn-sm">Delete</button>
           </td>
         </tr>
       </tbody>
     </table>
+
+   <!-- Confirmation Popup -->
+<div v-if="showPopup" class="popup-overlay">
+  <div class="popup">
+    <h2>Are you sure?</h2>
+    <p v-if="deleteType === 'unit'">Do you really want to delete this unit? This action cannot be undone.</p>
+    <p v-if="deleteType === 'clinic'">Do you really want to delete this clinic? This action cannot be undone.</p>
+    <div class="popup-actions">
+      <button class="confirm-btn" @click="deleteType === 'unit' ? deleteUnit() : deleteClinic()">Yes, Delete</button>
+      <button class="cancel-btn" @click="closePopup">Cancel</button>
+    </div>
+  </div>
+</div>
 
     <!-- Unit Controls -->
     <div class="mt-4">
@@ -88,6 +107,7 @@
       </div>
     </div>
 
+
     <!-- Units List -->
     <h3 class="mt-5">Units List</h3>
     <div v-for="(unit, index) in units" :key="index" class="border p-3 mb-3">
@@ -103,7 +123,7 @@
       </ul>
 
       <button @click="editUnit(index)" class="btn btn-warning btn-sm">Update</button>
-      <button @click="deleteUnit(index)" class="btn btn-danger btn-sm">Delete</button>
+      <button @click="confirmDeleteUnit(index)" class="btn btn-danger btn-sm">Delete</button>
     </div>
   </div>
 
@@ -111,37 +131,47 @@
   
   <script>
   export default {
-    name: "UnitManager",
     data() {
-      return {
-        unit: {
-          name: '',
-          address: '',
-          hours: { from: '', to: '' },
-          clinics: []
-        },
-        clinic: {
-          name: '',
-          hours: { from: '', to: '' },
-          services: ''
-        },
-        units: [],
-        editIndex: null,
-        editClinicIndex: null,
-        errors: {
-          unit: {
-            name: false,
-            address: false,
-            hours: false,
-          },
-          clinic: {
-            name: false,
-            hours: false,
-            services: false,
-          }
-        }
-      };
+  return {
+    unit: {
+      name: '',
+      address: '',
+      hours: { from: '', to: '' },
+      clinics: []
     },
+    clinic: {
+      name: '',
+      hours: { from: '', to: '' },
+      services: ''
+    },
+    units: [],
+    editIndex: null,
+    editClinicIndex: null,
+    errors: {
+      unit: {
+        name: false,
+        address: false,
+        hours: {
+          from: false,
+          to: false,
+        },
+      },
+      clinic: {
+        name: false,
+        hours: {
+          from: false,
+          to: false,
+        },
+        services: false,
+      },
+    },
+    showPopup: false, 
+    clinicToDeleteIndex: null, 
+    unitToDeleteIndex: null,
+    deleteType: null
+  };
+},
+
     methods: {
       addClinic() {
         this.resetErrors(); 
@@ -151,10 +181,26 @@
           this.errors.clinic.name = true;
           hasError = true;
         }
-        if (!this.clinic.hours.from || !this.clinic.hours.to) {
-          this.errors.clinic.hours = true;
-          hasError = true;
-        }
+        if (!this.clinic.hours.from) {
+    this.errors.clinic.hours = this.errors.clinic.hours || {}; 
+    this.errors.clinic.hours.from = true;
+    hasError = true;
+} else if (!/AM|PM/i.test(this.clinic.hours.from)) {
+        this.errors.clinic.hours = this.errors.clinic.hours || {}; 
+        this.errors.clinic.hours.fromFormat = true;
+        hasError = true;
+    }
+
+if (!this.clinic.hours.to) {
+    this.errors.clinic.hours = this.errors.clinic.hours || {}; 
+    this.errors.clinic.hours.to = true;
+    hasError = true;
+} else if (!/AM|PM/i.test(this.clinic.hours.to)) {
+        this.errors.clinic.hours = this.errors.clinic.hours || {}; 
+        this.errors.clinic.hours.toFormat = true;
+        hasError = true;
+    }
+
         if (!this.clinic.services) {
           this.errors.clinic.services = true;
           hasError = true;
@@ -182,10 +228,18 @@
           this.errors.unit.address = true;
           hasError = true;
         }
-        if (!this.unit.hours.from || !this.unit.hours.to) {
-          this.errors.unit.hours = true;
-          hasError = true;
-        }
+        if (!this.unit.hours.from) {
+    this.errors.unit.hours = this.errors.unit.hours || {}; 
+    this.errors.unit.hours.from = true;
+    hasError = true;
+}
+
+if (!this.unit.hours.to) {
+    this.errors.unit.hours = this.errors.unit.hours || {}; 
+    this.errors.unit.hours.to = true;
+    hasError = true;
+}
+
 
         if (!hasError) {
           if (this.editIndex !== null) {
@@ -197,16 +251,44 @@
           this.clearFields();
         }
       },
-      deleteClinic(index) {
-        this.unit.clinics.splice(index, 1);
-      },
+      
+      confirmDeleteclinic(index) {
+    this.showPopup = true; // عرض النافذة
+    this.clinicToDeleteIndex = index; // تحديد العيادة المراد حذفها
+    this.deleteType = 'clinic'; 
+  },
+  deleteClinic() {
+    if (this.clinicToDeleteIndex !== null) {
+      this.unit.clinics.splice(this.clinicToDeleteIndex, 1); // حذف العيادة
+      this.clinicToDeleteIndex = null; // إعادة تعيين المؤشر
+      this.showPopup = false; // إغلاق النافذة
+      this.deleteType = null;
+    }
+  },
       editClinic(index) {
         this.clinic = { ...this.unit.clinics[index] };
         this.editClinicIndex = index;
       },
-      deleteUnit(index) {
-        this.units.splice(index, 1);
-      },
+
+      confirmDeleteUnit(index) {
+    this.showPopup = true;
+    this.unitToDeleteIndex = index;
+    this.deleteType = 'unit'; 
+  },
+  deleteUnit() {
+    if (this.unitToDeleteIndex !== null) {
+      this.units.splice(this.unitToDeleteIndex, 1); 
+      this.unitToDeleteIndex = null; 
+      this.showPopup = false; 
+      this.deleteType = null;
+    }
+  },
+  closePopup() {
+    this.showPopup = false; 
+    this.clinicToDeleteIndex = null;
+    this.unitToDeleteIndex = null; 
+    this.deleteType = null;
+  },
       editUnit(index) {
         this.unit = { ...this.units[index] };
         this.editIndex = index;
@@ -223,11 +305,15 @@
           unit: {
             name: false,
             address: false,
-            hours: false,
+            hours: {
+            from: false,
+             to: false},
           },
           clinic: {
             name: false,
-            hours: false,
+            hours: {
+            from: false,
+             to: false},
             services: false,
           }
         };
@@ -249,6 +335,73 @@
   color: red;
   font-size: 0.9em;
   margin-top: 4px;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.popup h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.popup-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
+.confirm-btn {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.cancel-btn {
+  background-color: #5bc0de;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* تعديل عرض حقول الكلينيك */
+.clinic-working-hours input[type="time"] {
+  width: 110px; /* تعديل العرض */
+  padding: 5px; /* تحسين المسافة الداخلية */
+  margin-right: 5px; /* مسافة بين الحقول */
+}
+
+/* تعديل عرض النص داخل الإطار */
+.clinic-working-hours .input-group-text {
+  padding: 5px 10px;
 }
 
 </style>

@@ -43,7 +43,7 @@
            src="/login.png"
           alt="Login Illustration"
            class="img-fluid rounded"
-           style="max-height: 250px;"
+           style="max-height: 200px;"
                />
         </div>
       </div>
@@ -67,13 +67,12 @@ methods: {
 },
 };
 </script>
-
 <style scoped>
 /* General Card Styling */
 .login-card {
   border: none;
   border-radius: 15px;
-  max-width: 800px;
+  max-width: 600px;
   width: 100%;
 }
 
@@ -92,25 +91,47 @@ methods: {
   background-color: #f8f9fa !important;
 }
 
-.image-placeholder {
-  width: 100px;
-  height: 100px;
+.input-group {
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
-.btn-outline-secondary i {
+.input-group .form-control {
+  border-radius: 5px 0 0 5px;
+  height: 45px;
+  flex: 1; /* لضمان تمدد الحقل مع المساحة المتاحة */
+}
+
+.btn-toggle-password {
+  background-color: #ffa500;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  cursor: pointer;
+}
+
+.btn-toggle-password i {
+  color: #fff;
   font-size: 1.2rem;
 }
 
+.btn-toggle-password:hover {
+  background-color: #ff8800;
+}
 
+/* Media Query for Mobile Responsiveness */
 @media (max-width: 768px) {
   .login-card {
     max-width: 100%;
+    border-radius: 10px;
+    padding: 10px;
   }
 
-  .no-gutters {
+  .row.no-gutters {
     flex-direction: column;
   }
 
@@ -121,7 +142,6 @@ methods: {
 
   .bg-light {
     padding: 20px;
-    justify-content: center;
   }
 
   img {
@@ -129,13 +149,61 @@ methods: {
     width: auto;
   }
 
+  h3 {
+    font-size: 1.5rem;
+  }
+
   .form-control {
     font-size: 0.8rem;
+    height: 40px;
   }
 
   .btn {
     font-size: 0.9rem;
     height: 40px;
   }
+
+  .btn-toggle-password {
+    height: 40px;
+    padding: 0 10px;
+  }
+
+  .btn-toggle-password i {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-card {
+    padding: 15px;
+  }
+
+  img {
+    max-height: 120px;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  .form-control {
+    font-size: 0.75rem;
+    height: 35px;
+  }
+
+  .btn {
+    font-size: 0.8rem;
+    height: 35px;
+  }
+
+  .btn-toggle-password {
+    height: 35px;
+    padding: 0 8px;
+  }
+
+  .btn-toggle-password i {
+    font-size: 0.9rem;
+  }
 }
 </style>
+
