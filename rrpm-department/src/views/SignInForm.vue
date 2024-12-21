@@ -1,18 +1,22 @@
 <template>
-  <div class="container d-flex justify-content-center align-items-center vh-100">
+  <div
+    class="container d-flex justify-content-center align-items-center vh-100"
+  >
     <div class="card shadow login-card">
       <div class="row no-gutters">
         <!-- Section for form -->
         <div class="col-md-6 p-4">
           <h3 class="text-center mb-4">Sign in</h3>
-          <form>
+          <form @submit.prevent="handleLogin">
             <div class="form-group mb-3">
               <label for="username" class="form-label">Username</label>
               <input
                 type="text"
                 class="form-control"
                 id="username"
+                v-model="username"
                 placeholder="e.g. admin1234"
+                required
               />
             </div>
             <div class="form-group mb-4">
@@ -24,27 +28,48 @@
                   id="password"
                   v-model="password"
                   placeholder="Enter at least 8+ characters"
+                  required
                 />
-                <button 
-                  type="button" 
-                  class="btn btn-outline-secondary" 
-                  @click="togglePasswordVisibility">
-                  <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  @click="togglePasswordVisibility"
+                >
+                  <i
+                    :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                  ></i>
                 </button>
               </div>
             </div>
-            <button type="submit" class="btn btn-dark w-100">Sign in</button>
+            <div v-if="errorMessage" class="alert alert-danger" role="alert">
+              {{ errorMessage }}
+            </div>
+            <button
+              type="submit"
+              class="btn btn-dark w-100"
+              :disabled="loading"
+            >
+              <span
+                v-if="loading"
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              {{ loading ? "Signing in..." : "Sign in" }}
+            </button>
           </form>
         </div>
-        
+
         <!-- Section for image -->
-        <div class="col-md-6 d-flex justify-content-center align-items-center bg-light">
+        <div
+          class="col-md-6 d-flex justify-content-center align-items-center bg-light"
+        >
           <img
-           src="/login.png"
-          alt="Login Illustration"
-           class="img-fluid rounded"
-           style="max-height: 200px;"
-               />
+            src="/login.png"
+            alt="Login Illustration"
+            class="img-fluid rounded"
+            style="max-height: 200px"
+          />
         </div>
       </div>
     </div>
@@ -53,18 +78,58 @@
 
 <script>
 export default {
-name: "LoginPage",
-data() {
-  return {
-    password: "",
-    showPassword: false,
-  };
-},
-methods: {
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+  name: "LoginPage",
+  data() {
+    return {
+      username: "",
+      password: "",
+      showPassword: false,
+      loading: false,
+      errorMessage: "",
+    };
   },
-},
+  methods: {
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
+    async handleLogin() {
+      this.loading = true;
+      this.errorMessage = "";
+
+      try {
+        const response = await fetch(
+          "https://your-api-url.com/api/auth/login",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: this.username,
+              password: this.password,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Invalid username or password");
+        }
+
+        const data = await response.json();
+
+        // Save the token and user info to localStorage/sessionStorage
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // Redirect to a protected route
+        this.$router.push("/dashboard");
+      } catch (error) {
+        this.errorMessage = error.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
 };
 </script>
 <style scoped>
@@ -206,4 +271,3 @@ methods: {
   }
 }
 </style>
-
