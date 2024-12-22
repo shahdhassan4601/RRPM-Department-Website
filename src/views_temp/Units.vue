@@ -5,7 +5,6 @@
         <router-link to="/unit-admin" class="btn btn-success btn-sm">Add</router-link>
       </div>
   
-      <!-- Display Units -->
       <div v-for="(unit, index) in units" :key="unit.unit_id" :id="'unit-' + unit.unit_id" class="card mb-4">
         <div class="card-body">
           <h5>{{ unit.name }}</h5>
