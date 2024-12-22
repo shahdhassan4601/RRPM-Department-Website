@@ -5,6 +5,10 @@ import ActivityAdmin from "../views/ActivityAdmin.vue";
 import Research from "../views/Research.vue";
 import ResearchAdmin from "../views/ResearchAdmin.vue";
 import Units from "../views/Units.vue";
+import LoginPage from '../views/SignInForm.vue';
+import UnitManager from '../views/UnitManager.vue';
+import ContactUs from '../views/ContactUs.vue'; 
+                          
 
 const routes = [
     {
@@ -28,6 +32,9 @@ const routes = [
         props: true,
     },
     { path: "/units", component: Units },
+    { path: '/login', component: LoginPage }, 
+    { path: '/unitmanager', component: UnitManager }, 
+    { path: '/contact-us', component: ContactUs }
 ];
 
 const router = createRouter({
