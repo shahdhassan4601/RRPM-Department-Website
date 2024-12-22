@@ -6,7 +6,7 @@ import Research from "../views/Research.vue";
 import ResearchAdmin from "../views/ResearchAdmin.vue";
 import Units from "../views/Units.vue";
 import LoginPage from '../views/SignInForm.vue';
-import UnitManager from '../views/UnitManager.vue';
+import UnitAdmin from '../views/UnitAdmin.vue';
 import ContactUs from '../views/ContactUs.vue'; 
 import Home from '../views/Home.vue';
 import AboutUs from '../views/AboutUs.vue';
@@ -36,7 +36,7 @@ const routes = [
     },
     { path: "/units", component: Units },
     { path: '/login', component: LoginPage }, 
-    { path: '/unitmanager', component: UnitManager }, 
+    { path: '/unit-admin', component: UnitAdmin }, 
     { path: '/contact-us', component: ContactUs },
     { path: '/', name: 'home', component: Home },
     { path: '/aboutus', name: 'aboutus', component: AboutUs },

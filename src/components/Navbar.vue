@@ -45,7 +45,7 @@
                         >
                     </li>
                     <li class="nav-item">
-                        <router-link to="/contact" class="nav-link"
+                        <router-link to="/contact-us" class="nav-link"
                             >Contact us</router-link
                         >
                     </li>
