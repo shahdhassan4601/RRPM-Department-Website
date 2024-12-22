@@ -4,15 +4,13 @@
         <div class="row mb-3 justify-content-between align-items-center">
             <div class="col-12 col-md-8">
                 <h1 class="activity-title">
-                    {{ getTranslatedData(activity.title) }}
+                    {{ activity.title }}
                 </h1>
             </div>
 
             <!-- Status Row -->
             <div class="col-12 col-md-auto text-md-end text-center">
-                <span class="status-box px-3 py-2">{{
-                    getTranslatedData(activity.status)
-                }}</span>
+                <span class="status-box px-3 py-2">{{ activity.status }}</span>
             </div>
         </div>
 
@@ -20,7 +18,7 @@
         <div class="row mb-3">
             <div class="col-auto unit-row">
                 <span class="unit-box px-3 py-2">{{
-                    getTranslatedData(activity.unit)
+                    getUnitName(activity.unit_id)
                 }}</span>
             </div>
         </div>
@@ -29,15 +27,15 @@
         <div class="row details-row text-md-start justify-content-center">
             <div class="col-auto">
                 <i class="bi bi-calendar-event mx-2"></i>
-                <span>{{ getTranslatedData(activity.date) }}</span>
+                <span>{{ activity.date_start }} - {{ activity.date_end }}</span>
             </div>
             <div class="col-auto">
                 <i class="bi bi-clock mx-2"></i>
-                <span>{{ getTranslatedData(activity.time) }}</span>
+                <span>{{ activity.time_start }} - {{ activity.time_end }}</span>
             </div>
             <div class="col-auto">
                 <i class="bi bi-geo-alt mx-2"></i>
-                <span>{{ getTranslatedData(activity.address) }}</span>
+                <span>{{ activity.location }}</span>
             </div>
         </div>
 
@@ -47,35 +45,58 @@
                 <!-- Add narrow spacing between columns -->
                 <!-- Large Photo -->
                 <div class="col-lg-7 mb-lg-3">
-                    <img
-                        :src="activity.img.large"
+                    <!-- <img
+                        v-if="activity.media?.length"
+                        :src="activity.media[0].path"
                         class="large-photo"
-                        alt="Large Activity Photo"
+                        alt="Activity Photo"
                     />
+                    <div v-else class="placeholder large-photo">
+                        <img
+                            src="https://via.placeholder.com/1000x700"
+                            alt="Large Image Placeholder"
+                            class="large-photo"
+                        />
+                    </div> -->
+                    <div class="placeholder large-photo">
+                        <img
+                            src="https://via.placeholder.com/1000x700"
+                            alt="Large Image Placeholder"
+                            class="large-photo"
+                        />
+                    </div>
                 </div>
 
                 <!-- Small Photos -->
                 <div class="col-lg-3">
                     <div class="row">
-                        <div class="small-photo-container mb-1">
-                            <img
-                                :src="activity.img.small[0]"
+                        <!-- <div
+                            v-for="(smallImage, index) in activity.media?.slice(1, 4)"
+                            :key="index"
+                            class="small-photo-container mb-1"
+                        >
+                             <img
+                                v-if="smallImage"
+                                :src="smallImage.path"
                                 class="small-photo"
-                                alt="Small Activity Photo 1"
+                                alt="Small Activity Photo"
                             />
-                        </div>
-                        <div class="small-photo-container mb-1">
+                            <div v-else class="small-photo-container mb-1 placeholder">
+                                <img
+                                    :src="getSmallImagePlaceholder(index)"
+                                    class="small-photo"
+                                    alt="Small Image Placeholder"
+                                />
+                            </div> -->
+                        <div
+                            v-for="(smallImage, index) in [null, null, null]"
+                            :key="index"
+                            class="small-photo-container mb-1 me-2"
+                        >
                             <img
-                                :src="activity.img.small[1]"
+                                :src="getSmallImagePlaceholder(index)"
                                 class="small-photo"
-                                alt="Small Activity Photo 2"
-                            />
-                        </div>
-                        <div class="small-photo-container">
-                            <img
-                                :src="activity.img.small[2]"
-                                class="small-photo"
-                                alt="Small Activity Photo 3"
+                                alt="Small Image Placeholder"
                             />
                         </div>
                     </div>
@@ -85,94 +106,75 @@
 
         <!-- Detailed Description Section -->
         <div class="detailed-description">
-            <p>{{ getTranslatedData(activity.description) }}</p>
+            <p>{{ activity.description }}</p>
         </div>
 
         <!-- Tags Section -->
         <div class="tags-section mt-4">
             <div class="tags-container d-flex flex-wrap gap-2">
                 <span
-                    v-for="(tag, index) in getTranslatedData(activity.tags)"
+                    v-for="(tag, index) in activity.keywords"
                     :key="index"
-                    class="tag-badge px-3 py-2"
+                    class="badge badge-pill"
+                    :class="`tag-badge`"
                 >
-                    {{ "# " + tag }}
+                    {{ "# " + tag.keyword }}
                 </span>
             </div>
+        </div>
+
+        <!-- Buttons Section -->
+        <div class="buttons-section text-center mt-4">
+            <button class="btn btn-primary btn-sm" @click="goBack">
+                Go Back
+            </button>
         </div>
     </div>
 </template>
 
 <script>
+import { activities, units } from "../utils/dataUtil"; // Assuming units are available in dataUtil
+
 export default {
     name: "SingleActivity",
-    props: {
-        selectedLang: {
-            type: String,
-            required: true,
-        },
-    },
     data() {
         return {
-            activity: {
-                title: {
-                    en: "Health Awareness Campaign",
-                    ar: "حملة توعية صحية",
-                },
-                unit: { en: "Rheumatology Unit", ar: "وحدة الروماتيزم" },
-                status: {
-                    en: "Ongoing", // Options: "Upcoming", "Ongoing", "Completed"
-                    ar: "جارية", // خيارات: "قادمة"، "جارية"، "مكتملة"
-                },
-                date: "2024-12-20", // Shared between languages
-                time: {
-                    en: "10:00 AM - 2:00 PM",
-                    ar: "10:00 صباحًا - 2:00 مساءً",
-                },
-                address: {
-                    en: "Room 01, Main Hospital lorem ipsum dolor sit amet",
-                    ar: "الغرفة 01، المستشفى الرئيسي",
-                },
-                img: {
-                    large: "https://via.placeholder.com/1000x700", // Large image placeholder
-                    small: [
-                        "https://via.placeholder.com/200x150?text=Small+1", // Small image 1
-                        "https://via.placeholder.com/200x150?text=Small+2", // Small image 2
-                        "https://via.placeholder.com/200x150?text=Small+3", // Small image 3
-                    ],
-                },
-                description: {
-                    en: "This is a detailed description of the health awareness activity,focusing on the importance of health in rheumatology. This is a detailed description of the health awareness activity, focusing on the importance of health in rheumatology. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum adipisci amet esse numquam, ullam perspiciatis quo. Explicabo, aliquam? Incidunt aperiam doloremque, perspiciatis magnam consequuntur et tempora ratione quia similique eum. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum adipisci amet esse numquam, ullam perspiciatis quo. Explicabo, aliquam? Incidunt aperiam doloremque, perspiciatis magnam consequuntur et tempora ratione quia similique eum.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum adipisci amet esse numquam, ullam perspiciatis quo. Explicabo, aliquam? Incidunt aperiam doloremque, perspiciatis magnam consequuntur et tempora ratione quia\n similique eum.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum adipisci amet esse numquam, ullam perspiciatis quo. Explicabo, aliquam? Incidunt aperiam doloremque, perspiciatis magnam consequuntur et tempora ratione quia similique eum.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum adipisci amet esse numquam, ullam perspiciatis quo. Explicabo, aliquam? Incidunt aperiam doloremque, perspiciatis magnam consequuntur et tempora ratione quia similique eum.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum adipisci amet esse numquam, ullam perspiciatis quo. Explicabo, aliquam? Incidunt aperiam doloremque, perspiciatis magnam consequuntur et tempora ratione quia similique eum.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum adipisci amet esse numquam, ullam perspiciatis quo. Explicabo, aliquam? Incidunt aperiam doloremque, perspiciatis magnam consequuntur et tempora ratione quia similique eum.",
-                    ar: "هذا هو الوصف التفصيلي لنشاط التوعية الصحية، مع التركيز على أهمية الصحة في الروماتيزم.",
-                },
-                tags: {
-                    en: ["Health", "Awareness", "Rheumatology"],
-                    ar: ["الصحة", "التوعية", "الروماتيزم"],
-                },
-            },
-            methods: {
-                getTranslatedData(field) {
-                    if (typeof field === "object") {
-                        return field[this.selectedLang]; // Use selectedLang for translations
-                    }
-                    return field;
-                },
-            },
+            activity: {}, // Single activity data
         };
     },
+
+    mounted() {
+        const activityId = parseInt(this.$route.params.id, 10); // Get the activity ID from the route params
+        // Find the activity in the activities array by ID
+        const activity = activities.find(
+            (activity) => activity.activity_id === activityId
+        );
+        if (activity) {
+            this.activity = activity; // Set the activity data
+        } else {
+            console.error("Activity not found");
+        }
+    },
+
     methods: {
-        // Method to retrieve data based on the selected language
-        getTranslatedData(field) {
-            // If the field is an object, retrieve the value based on the current language
-            if (typeof field === "object") {
-                return field[this.selectedLang];
-            }
-            // Otherwise, return the field directly
-            return field;
+        // Get the unit name based on the unit_id
+        getUnitName(unitId) {
+            const unit = units.find((unit) => unit.unit_id === unitId);
+            return unit ? unit.name : "Unknown Unit"; // Return unit name or "Unknown Unit" if not found
         },
-        // Method to change the language (useful for testing or toggling)
-        changeLanguage(lang) {
-            this.selectedLang = lang;
+
+        // Placeholder logic for small images
+        getSmallImagePlaceholder(index) {
+            const placeholders = [
+                "https://via.placeholder.com/200x150?text=Small+1", // Small image 1
+                "https://via.placeholder.com/200x150?text=Small+2", // Small image 2
+                "https://via.placeholder.com/200x150?text=Small+3", // Small image 3
+            ];
+            return placeholders[index] || placeholders[0]; // Return the appropriate placeholder
+        },
+
+        goBack() {
+            this.$router.push("/activities"); // Navigate back to the activities list
         },
     },
 };
@@ -186,13 +188,11 @@ export default {
 .activity-title {
     font-size: 3rem;
     font-weight: bold;
-    color: #023047;
 }
 
 /* Unit Box Styles */
 .unit-box {
     background-color: #c2ecff;
-    color: #023047;
     border-radius: 50px;
     font-size: 1rem;
     font-weight: 500;
@@ -200,7 +200,7 @@ export default {
 
 /* Status Box Styles */
 .status-box {
-    background-color: #fb8500;
+    background-color: #fd9e02;
     color: white;
     border-radius: 50px;
     font-size: 1rem;
@@ -227,7 +227,6 @@ export default {
 .photos-row {
     max-width: 100%; /* Restrict the width of the grid */
     margin: 0 auto; /* Center the grid in the container */
-    /* margin-left: 120px; */
 }
 
 /* Large Photo Styles */
@@ -236,16 +235,24 @@ export default {
     height: 400px; /* Fixed height for the large image */
     object-fit: cover; /* Crop the image to fit the container */
     border-radius: 8px; /* Optional: rounded corners */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #777;
+    font-size: 1rem;
 }
 
 /* Small Photo Container Styles */
 .small-photo-container {
     height: calc(390px / 3); /* Divide the large image's height by 3 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Small Photo Styles */
 .small-photo {
-    width: 100%; /*Fill the column width */
+    width: 100%; /* Fill the column width */
     height: 100%; /* Fill the height of the container */
     object-fit: cover; /* Crop the image to fit the container */
     border-radius: 8px; /* Optional: rounded corners */
@@ -279,7 +286,6 @@ export default {
 .tags-section h5 {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #023047;
 }
 
 .tags-container {
@@ -297,6 +303,8 @@ export default {
     text-transform: capitalize;
     white-space: nowrap; /* Ensure the text doesn't wrap */
     display: inline-block;
+    padding: 5px 10px;
+    margin-top: 5px;
 }
 
 /* Mobile View Adjustments */
@@ -358,18 +366,36 @@ export default {
         border-radius: 8px; /* Optional: rounded corners */
     }
 
-    .tags-section {
-        max-width: 100%;
-    }
-    /* Tags Section */
-    .tags-container {
-        justify-content: start; /* Center tags on mobile */
-    }
+/* Tags Section Styles */
+.tags-section {
+    max-width: 85%; /* Ensure the tags section aligns with the page */
+    margin: 0 auto; /* Center the section */
+    text-align: left; /* Align the section title to the left */
+}
 
-    .tag-badge {
-        font-size: 0.8rem; /* Reduce tag font size for mobile */
-        padding: 5px 10px; /* Adjust padding for better fit */
-    }
+.tags-section h5 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #023047;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Add spacing between tags */
+}
+
+.tag-badge {
+    background-color: #023047; /* Dark background */
+    color: #ffffff; /* Light text */
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    white-space: nowrap; /* Ensure the text doesn't wrap */
+    display: inline-block;
+    padding: 5px 15px; /* Add padding for a better look */
+}
 
     /* Description Section */
     .detailed-description {
