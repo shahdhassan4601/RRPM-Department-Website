@@ -2,7 +2,7 @@
   <div class="container my-5">
     <div class="d-flex align-items-center mb-4">
       <h1 class="me-3 mb-0">Scientific Research</h1>
-      <router-link to="/add-research_admin"  class="btn btn-success btn-sm">Add</router-link>
+      <router-link to="/research-admin"  class="btn btn-success btn-sm">Add</router-link>
     </div>
     <p class="mb-4"><strong>Highlighted Topics:</strong> 
       <span class="badge bg-secondary">Drug development</span> 
@@ -42,9 +42,9 @@
         Authors: {{ article.authors.join(', ') }} | Published: {{ article.publicationDate }} | Organization: {{ article.organization }}
       </p>
       <p>{{ article.content }}</p>
-
+      <p>{{ index }}</p>
        <!-- Learn More Button -->
-       <router-link :to="`/SingleResearch/${article.id}`" class="btn btn-info">Learn More</router-link>
+       <router-link :to="`/research/${index}`" class="btn btn-info">Learn More</router-link>
 
 
  
@@ -109,7 +109,7 @@ export default {
     editResearch(index) {
       const research = this.researches[index];
       localStorage.setItem('editResearch', JSON.stringify(research)); // Store research data in localStorage
-      this.$router.push(`/edit-research_admin/${index}`); // Corrected path
+      this.$router.push(`/research-admin/${index}`); // Corrected path
     },
     // Delete the selected research
     deleteResearch(index) {

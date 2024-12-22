@@ -1,29 +1,38 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Activity from '../Views/activity.vue';
-import Research from '../Views/research.vue';
-import Research_admin from '../Views/research_admin.vue';
-import Units from '../Views/units.vue';
-import UnitManager from '../Views/UnitManager.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import SingleActivity from "../views/SingleActivity.vue";
+import SingleResearch from "../views/SingleResearch.vue";
+import ActivityAdmin from "../views/ActivityAdmin.vue";
+import Research from "../views/Research.vue";
+import ResearchAdmin from "../views/ResearchAdmin.vue";
+import Units from "../views/Units.vue";
 
-
-
-
-// إعداد المسارات (Routes)
 const routes = [
-  { path: '/activity', component: Activity },
-  { path: '/research', component: Research },
-  { path: '/add-research_admin', component: Research_admin },
-  { path: '/edit-research_admin/:index', component: Research_admin ,props: true,  },
-  { path: '/add-UnitManager', component: UnitManager }, 
-  { path: '/add-UnitManager', component: UnitManager }, 
-  { path: '/edit-UnitManager/id:', component: UnitManager }, 
-  { path: '/units', component: Units },
+    {
+        path: "/activities/:id",
+        name: "SingleActivity",
+        component: SingleActivity,
+        props: true,
+    },
+    {
+        path: "/research/:id",
+        name: "SingleResearch",
+        component: SingleResearch,
+        props: (route) => ({ id: route.params.id }),
+    },
+    { path: "/activity-admin", component: ActivityAdmin },
+    { path: "/research", component: Research },
+    { path: "/research-admin", component: ResearchAdmin },
+    {
+        path: "/research-admin/:index",
+        component: ResearchAdmin,
+        props: true,
+    },
+    { path: "/units", component: Units },
 ];
 
-// إنشاء الـ Router
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+    history: createWebHistory(),
+    routes,
 });
 
-export default router
+export default router;
