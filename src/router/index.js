@@ -8,6 +8,9 @@ import Units from "../views/Units.vue";
 import LoginPage from '../views/SignInForm.vue';
 import UnitManager from '../views/UnitManager.vue';
 import ContactUs from '../views/ContactUs.vue'; 
+import Home from '../views/Home.vue';
+import AboutUs from '../views/AboutUs.vue';
+import GeneralActivities from '../views/Activities.vue';
                           
 
 const routes = [
@@ -34,7 +37,10 @@ const routes = [
     { path: "/units", component: Units },
     { path: '/login', component: LoginPage }, 
     { path: '/unitmanager', component: UnitManager }, 
-    { path: '/contact-us', component: ContactUs }
+    { path: '/contact-us', component: ContactUs },
+    { path: '/', name: 'home', component: Home },
+    { path: '/aboutus', name: 'aboutus', component: AboutUs },
+    { path: '/activities', name: 'genact', component: GeneralActivities },
 ];
 
 const router = createRouter({
