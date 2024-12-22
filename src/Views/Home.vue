@@ -71,7 +71,7 @@
 
         <!-- "Explore More" Button that takes you to /researches -->
         <div class="text-center mt-4">
-          <router-link to="/researches" class="btn btn-secondary">
+          <router-link to="/research" class="btn btn-secondary">
             Explore More
           </router-link>
         </div>

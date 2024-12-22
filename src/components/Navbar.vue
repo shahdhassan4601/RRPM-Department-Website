@@ -51,10 +51,10 @@
                     </li>
                 </ul>
             </nav>
-            <select class="form-select form-select-sm w-auto">
-                <option>English</option>
-                <option>Arabic</option>
-            </select>
+            <LangSwitcher
+                :currentLang="selectedLang"
+                @change-language="changeLanguage"
+            />
         </div>
 
         <!-- Offcanvas Menu for Mobile -->

@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center mb-4">
       <h1 class="me-3 mb-0">Medical Units</h1>
       <!-- زر التنقل لإضافة وحدة جديدة -->
-      <router-link to="/add-UnitManager" class="btn btn-success btn-sm">Add</router-link>
+      <router-link to="/unit-admin" class="btn btn-success btn-sm">Add</router-link>
     </div>
 
     <!-- عرض الوحدات -->
