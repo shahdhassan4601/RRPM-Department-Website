@@ -12,13 +12,17 @@
         <!-- Author and Publish Date -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <span class="author-name">{{
-                    getTranslatedData(research.author)
-                }}</span>
+                <span class="author-name m-2"
+                        v-for="(author, index) in 
+                            research.authors"
+                        :key="index"
+                    >
+                        {{ author.name }}
+                    </span>
             </div>
             <div class="col-md-6 text-md-end">
                 <span class="publish-date">{{
-                    getTranslatedData(research.publishDate)
+                    getTranslatedData(research.publishing_date)
                 }}</span>
             </div>
         </div>
@@ -49,13 +53,12 @@
             <div class="col-12">
                 <div class="keywords-section">
                     <span
-                        v-for="(tag, index) in getTranslatedData(
-                            research.keywords
-                        )"
+                        v-for="(tag, index) in 
+                            research.keywords"
                         :key="index"
                         class="keyword-badge"
                     >
-                        {{ "# " + tag }}
+                        {{ "# " + tag.keyword }}
                     </span>
                 </div>
             </div>
@@ -84,6 +87,7 @@
     </div>
 </template>
 <script>
+import { scientificResearch } from "../utils/dataUtil";
 export default {
     name: "SingleResearch",
     props: {
@@ -94,27 +98,22 @@ export default {
     },
     data() {
         return {
-            research: {
-                title: "",
-                authors: "",
-                organization: "",
-                publicationDate: "",
-                content: "",
-                keywords: [],
-            },
+            research: {},
             relatedResearchTitle: "Related Research",
             relatedResearch: [],
-            researches: JSON.parse(localStorage.getItem("researches")) || [],
 
         };
     },
     created() {
-        // الحصول على index من الـ route
-        const index = this.$route.params.id;
-
-        // التحقق إذا كان الـ index موجودا
-        if (index !== undefined && this.researches[index]) {
-            this.research = { ...this.researches[index] };
+        const researchId = parseInt(this.$route.params.id, 10); // Get the research ID from the route params
+        // Find the research in the scientificResearch array by ID
+        const research = scientificResearch.find(
+            (research) => research.SR_id === researchId
+        );
+        if (research) {
+            this.research = research; // Set the research data
+        } else {
+            console.error("Research not found");
         }
     },
     methods: {

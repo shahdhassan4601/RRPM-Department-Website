@@ -143,7 +143,7 @@ export default {
         };
     },
 
-    mounted() {
+    created() {
         const activityId = parseInt(this.$route.params.id, 10); // Get the activity ID from the route params
         // Find the activity in the activities array by ID
         const activity = activities.find(
