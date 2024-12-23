@@ -4,8 +4,9 @@
         <h1 class="me-3 mb-0">Medical Units</h1>
         <router-link to="/unit-admin" class="btn btn-success btn-sm">Add</router-link>
       </div>
-  
-      <div v-for="(unit, index) in units" :key="unit.unit_id" :id="'unit-' + unit.unit_id" class="card mb-4">
+      <div v-if="unitStore.loading">Loading units...</div>
+
+      <div v-for="(unit) in unitStore.units" :key="unit.unit_id" :id="'unit-' + unit.unit_id" class="card mb-4">
         <div class="card-body">
           <h5>{{ unit.name }}</h5>
           <p>Address: {{ unit.address }}</p>
@@ -31,28 +32,26 @@
           <p>
             <strong>Mobile Number:</strong> {{ unit.phone_number }}
           </p>
-          <button @click="editUnit(index)" class="btn btn-secondary btn-sm me-2">Edit</button>
-          <button @click="deleteUnit(index)" class="btn btn-danger btn-sm">Delete</button>
+          <button @click="editUnit(unit.id)" class="btn btn-secondary btn-sm me-2">Edit</button>
+          <button @click="deleteUnit(unit.id)" class="btn btn-danger btn-sm">Delete</button>
         </div>
       </div>
     </div>
   </template>
   
   <script>
-  import { units } from '../utils/dataUtil';
-  
+//   import { units } from '../utils/dataUtil';
+  import { useDataStore } from '../stores/dataStore';
+
   export default {
     name: "Units",
-    data() {
-      return {
-        units: []
-      };
-    },
-    created() {
-      this.units = units;
+
+    setup() {
+        const unitStore = useDataStore();
+        return { unitStore };
     },
     mounted() {
-      // Check if there is a hash in the URL
+        // Check if there is a hash in the URL
       const hash = window.location.hash;
       if (hash) {
         const element = document.querySelector(hash);
@@ -65,14 +64,13 @@
     methods: {
       deleteUnit(index) {
         if (confirm("Are you sure you want to delete this unit?")) {
-          this.units.splice(index, 1);
+          this.unitStore.deleteUnit(index);
+
         }
       },
       editUnit(index) {
-        const unitToEdit = this.units[index];
-        localStorage.setItem("editUnit", JSON.stringify(unitToEdit)); // Store the unit for editing
-        // this.$router.push(`/unit-admin/${unitToEdit.unit_id}`); // Navigate to the edit page
-        this.$router.push({path: `/unit-admin/${unitToEdit.unit_id}`, state: { unitToEdit}});
+        const unitToEdit = this.unitStore.units[index];
+        this.$router.push(`/unit-admin/${unitToEdit.id}`); // Navigate to the edit page
       }
     }
   };

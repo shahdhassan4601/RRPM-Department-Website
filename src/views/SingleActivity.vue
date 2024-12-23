@@ -27,11 +27,11 @@
         <div class="row details-row text-md-start justify-content-center">
             <div class="col-auto">
                 <i class="bi bi-calendar-event mx-2"></i>
-                <span>{{ activity.date_start }} - {{ activity.date_end }}</span>
+                <span>{{ activity.startDate }} - {{ activity.endDate }}</span>
             </div>
             <div class="col-auto">
                 <i class="bi bi-clock mx-2"></i>
-                <span>{{ activity.time_start }} - {{ activity.time_end }}</span>
+                <span>{{ activity.startTime }} - {{ activity.endTime }}</span>
             </div>
             <div class="col-auto">
                 <i class="bi bi-geo-alt mx-2"></i>
@@ -106,7 +106,7 @@
 
         <!-- Detailed Description Section -->
         <div class="detailed-description">
-            <p>{{ activity.description }}</p>
+            <p>{{ activity.detailedDescription }}</p>
         </div>
 
         <!-- Tags Section -->
@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import { activities, units } from "../utils/dataUtil"; // Assuming units are available in dataUtil
+import { useDataStore } from '../stores/dataStore';
 
 export default {
     name: "SingleActivity",
@@ -142,13 +142,14 @@ export default {
             activity: {}, // Single activity data
         };
     },
-
+    setup() {
+        const activityStore = useDataStore();
+        return { activityStore };
+    },
     created() {
-        const activityId = parseInt(this.$route.params.id, 10); // Get the activity ID from the route params
+        const activityId = parseInt(this.$route.params.id); // Get the activity ID from the route params
         // Find the activity in the activities array by ID
-        const activity = activities.find(
-            (activity) => activity.activity_id === activityId
-        );
+        const activity = this.activityStore.getActivityById(activityId);
         if (activity) {
             this.activity = activity; // Set the activity data
         } else {
@@ -159,7 +160,7 @@ export default {
     methods: {
         // Get the unit name based on the unit_id
         getUnitName(unitId) {
-            const unit = units.find((unit) => unit.unit_id === unitId);
+            const unit = this.activityStore.units.find((unit) => unit.unit_id === unitId);
             return unit ? unit.name : "Unknown Unit"; // Return unit name or "Unknown Unit" if not found
         },
 

@@ -5,13 +5,12 @@ import ActivityAdmin from "../views/ActivityAdmin.vue";
 import Research from "../views/Research.vue";
 import ResearchAdmin from "../views/ResearchAdmin.vue";
 import Units from "../views/Units.vue";
-import LoginPage from '../views/SignInForm.vue';
-import UnitAdmin from '../views/UnitAdmin.vue';
-import ContactUs from '../views/ContactUs.vue'; 
-import Home from '../views/Home.vue';
-import AboutUs from '../views/AboutUs.vue';
-import GeneralActivities from '../views/Activities.vue';
-                          
+import LoginPage from "../views/SignInForm.vue";
+import UnitAdmin from "../views/UnitAdmin.vue";
+import ContactUs from "../views/ContactUs.vue";
+import Home from "../views/Home.vue";
+import AboutUs from "../views/AboutUs.vue";
+import GeneralActivities from "../views/Activities.vue";
 
 const routes = [
     {
@@ -35,12 +34,18 @@ const routes = [
         props: true,
     },
     { path: "/units", component: Units },
-    { path: '/login', component: LoginPage }, 
-    { path: '/unit-admin', component: UnitAdmin }, 
-    { path: '/contact-us', component: ContactUs },
-    { path: '/', name: 'home', component: Home },
-    { path: '/aboutus', name: 'aboutus', component: AboutUs },
-    { path: '/activities', name: 'genact', component: GeneralActivities },
+    { path: "/login", component: LoginPage },
+    { path: "/unit-admin", component: UnitAdmin },
+    {
+        path: "/unit-admin/:id", // The :id is the dynamic segment
+        name: "unit-admin",
+        component: UnitAdmin, // The component that should be shown for the given ID
+        props: true, // Pass route params as props to the component
+    },
+    { path: "/contact-us", component: ContactUs },
+    { path: "/", name: "home", component: Home },
+    { path: "/aboutus", name: "aboutus", component: AboutUs },
+    { path: "/activities", name: "genact", component: GeneralActivities },
 ];
 
 const router = createRouter({

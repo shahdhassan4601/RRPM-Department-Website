@@ -35,7 +35,7 @@
             <div class="col-md-4">
                 <label class="form-label">Clinic name</label>
                 <input
-                    v-model="clinic.name"
+                    v-model="unit.clinics.name"
                     type="text"
                     class="form-control"
                     placeholder="Brief description"
@@ -189,7 +189,7 @@
         </div>
 
         <!-- Units List -->
-        <h3 class="mt-5">Units List</h3>
+        <!-- <h3 class="mt-5">Units List</h3>
         <div
             v-for="(unit, index) in units"
             :key="index"
@@ -216,28 +216,37 @@
             >
                 Delete
             </button>
-        </div>
-        <button @click="test" class="btn btn-primary">test</button>
+        </div> -->
     </div>
 </template>
 
 <script>
+import { useDataStore } from "../stores/dataStore";
 export default {
     name: "UnitAdmin",
     data() {
         return {
             unit: {
+                id: 0,
                 name: "",
                 address: "",
-                hours: { from: "", to: "" },
+                hours: {
+                    from: "",
+                    to: "",
+                },
                 clinics: [],
+            working_days:[],
+            phone_number: "",
             },
             clinic: {
+                id: 0,
                 name: "",
-                hours: { from: "", to: "" },
-                services: "",
+                hours: {
+                    from: "",
+                    to: "",
+                },
+                services: [],
             },
-            units: [],
             editIndex: null,
             editClinicIndex: null,
             errors: {
@@ -264,15 +273,19 @@ export default {
             deleteType: null,
         };
     },
-    mounted() {
-        debugger;
-        console.log(this.$route.state);
-        console.log("test");
+
+    setup() {
+        const unitStore = useDataStore();
+        return { unitStore };
+    },
+    created() {
+        debugger
+        const id = parseInt(this.$route.params.id);
+        if (id) {
+            this.unit = this.unitStore.getUnitById(id);
+        }
     },
     methods: {
-        test() {
-          debugger;
-      },
         addClinic() {
             this.resetErrors();
             let hasError = false;
@@ -315,6 +328,7 @@ export default {
             }
         },
         addUnit() {
+            // debugger
             this.resetErrors();
             let hasError = false;
 
@@ -339,11 +353,12 @@ export default {
             }
 
             if (!hasError) {
-                if (this.editIndex !== null) {
-                    this.units[this.editIndex] = { ...this.unit };
-                    this.editIndex = null;
+                if (this.id !== null) {
+                    this.unitStore.updateUnit(this.unit);
+                    this.id = null;
                 } else {
-                    this.units.push({ ...this.unit });
+                    // this.units.push({ ...this.unit });
+                    this.unitStore.addUnit(this.unit);
                 }
                 this.clearFields();
             }

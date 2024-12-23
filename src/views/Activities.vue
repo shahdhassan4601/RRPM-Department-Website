@@ -41,7 +41,7 @@
             </div>
 
             <div class="row g-4">
-                <div class="col-12" v-for="activity in filteredActivities" :key="activity.activity_id">
+                <div class="col-12" v-for="activity in filteredActivities" :key="activity.id">
                     <div class="activity-card d-flex justify-content-between">
                         <div>
                             <h5 class="d-flex align-items-center">
@@ -50,9 +50,9 @@
                             </h5>
                             <p class="mb-1">
                                 <i class="bi bi-calendar"></i>
-                                {{ activity.date_start }} - {{ activity.date_end }} |
+                                {{ activity.startDate }} - {{ activity.endDate }} |
                                 <i class="bi bi-clock"></i>
-                                {{ activity.time_start }} - {{ activity.time_end }}
+                                {{ activity.startTime }} - {{ activity.endTime }}
                             </p>
                             <p class="mb-1">
                                 <i class="bi bi-geo-alt"></i>
@@ -60,15 +60,15 @@
                             </p>
                             <p>{{ activity.summary }}</p>
                             <!-- Learn More Button for Each Activity -->
-                            <router-link :to="{ name: 'SingleActivity', params: { id: activity.activity_id }}" class="text-decoration-none">
+                            <router-link :to="{ name: 'SingleActivity', params: { id: activity.id }}" class="text-decoration-none">
                                 Learn more
                             </router-link>
                         </div>
                         <div class="d-flex align-items-start">
-                            <button class="btn btn-secondary btn-sm me-2" @click="editActivity(activity.activity_id)">
+                            <button class="btn btn-secondary btn-sm me-2" @click="editActivity(activity.id)">
                                 Edit
                             </button>
-                            <button class="btn btn-danger btn-sm me-2" @click="confirmDelete(activity.activity_id)">
+                            <button class="btn btn-danger btn-sm me-2" @click="confirmDelete(activity.id)">
                                 Delete
                             </button>
                         </div>
@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { activities } from "../utils/dataUtil";
+import { useDataStore } from '../stores/dataStore';
 
 export default {
     name: "GeneralActivities",
@@ -92,14 +92,17 @@ export default {
             searchQuery: "",
             statusFilter: "",
             sortMode: "newest", // Default sort mode
-            activities: activities, // Using the activities data from dataUtil.js
         };
     },
-
+    setup() {
+        const activityStore = useDataStore();
+        return { activityStore };
+    },
     computed: {
         filteredActivities() {
+            debugger
             // Filter activities based on search query and status
-            let filtered = this.activities.filter((activity) => {
+            let filtered = this.activityStore.activities.filter((activity) => {
                 const matchesQuery = activity.title
                     .toLowerCase()
                     .includes(this.searchQuery.toLowerCase());
@@ -129,9 +132,7 @@ export default {
         },
         confirmDelete(activityId) {
             if (confirm("Are you sure you want to delete this activity?")) {
-                this.activities = this.activities.filter(
-                    (activity) => activity.activity_id !== activityId
-                );
+                this.activityStore.deleteActivity(activityId);
             }
         },
     },

@@ -16,13 +16,13 @@
         <div class="container">
           <h3 class="mb-4 text-center">Featured Medical Units</h3>
           <div class="row text-center g-4">
-            <div class="col-md-4" v-for="unit in units" :key="unit.unit_id" @mouseover="hover = unit.unit_id" @mouseleave="hover = null">
+            <div class="col-md-4" v-for="unit in units" :key="unit.id" @mouseover="hover = unit.unit_id" @mouseleave="hover = null">
               <div class="unit-card shadow-lg rounded" :class="{'scale-up': hover === unit.unit_id}">
                 <img :src="unit.image || 'https://via.placeholder.com/350x200'" :alt="unit.name" class="img-fluid mb-3">
                 <div class="unit-card-body">
                   <h5>{{ unit.name }}</h5>
                   <p class="unit-description">{{ unit.description ? unit.description.substring(0, 100) + '...' : 'No description available' }}</p>
-                  <router-link :to="'/units#unit-' + unit.unit_id" class="btn btn-primary mb-5">Explore</router-link>
+                  <router-link :to="'/units#unit-' + unit.id" class="btn btn-primary mb-5">Explore</router-link>
                 </div>
               </div>
             </div>
@@ -35,14 +35,14 @@
         <div class="container">
           <h3 class="mb-4 text-center">Latest Activities</h3>
           <div class="row g-4">
-            <div class="col-md-4" v-for="activity in activities" :key="activity.activity_id">
+            <div class="col-md-4" v-for="activity in activities" :key="activity.id">
               <div class="card shadow-sm border-0 rounded">
                 <img :src="'https://via.placeholder.com/350x200'" :alt="activity.title" class="card-img-top">
                 <div class="card-body">
                   <h5 class="card-title">{{ activity.title }}</h5>
                   <p class="card-text">{{ activity.description ? activity.description.substring(0, 100) + '...' : 'No description available' }}</p>
                   <p class="text-muted">Date: {{ activity.date_start }}</p>
-                  <router-link :to="{ name: 'SingleActivity', params: { id: activity.activity_id } }" class="btn btn-primary">Explore</router-link>
+                  <router-link :to="{ name: 'SingleActivity', params: { id: activity.id } }" class="btn btn-primary">Explore</router-link>
                 </div>
               </div>
             </div>
@@ -84,16 +84,9 @@
   </template>
   
   <script>
-  import Header from '../components/Navbar.vue';
-  import Footer from '../components/Footer.vue';
-  import { units, activities, scientificResearch } from '../utils/dataUtil';
-  
+  import { useDataStore } from '../stores/dataStore';
   export default {
     name: 'Home',
-    components: {
-      Header,
-      Footer
-    },
     data() {
       return {
         units: [],
@@ -102,10 +95,14 @@
         hover: null
       };
     },
+    setup() {
+        const dataStore = useDataStore();
+        return { dataStore };
+    },
     created() {
-      this.units = units;
-      this.activities = activities;
-      this.insights = scientificResearch;
+      this.units = this.dataStore.units;
+      this.activities = this.dataStore.activities;
+      this.insights = this.dataStore.research;
     }
   };
   </script>

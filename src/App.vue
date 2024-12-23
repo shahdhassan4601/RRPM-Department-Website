@@ -21,7 +21,7 @@
 import LangSwitcher from "./components/LangSwitcher.vue";
 import Header from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
-
+import { useDataStore } from "./stores/dataStore";
 export default {
     name: "App",
     components: {
@@ -33,6 +33,15 @@ export default {
         return {
             selectedLang: "en", // Default language
         };
+    },
+    setup() {
+        const dataStore = useDataStore();
+        return { dataStore };
+    },
+    created() {
+        // Fetch units from the store on creation
+        if (this.dataStore.units.length === 0)
+            this.dataStore.fetch();
     },
     methods: {
         changeLanguage(lang) {
