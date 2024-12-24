@@ -35,7 +35,7 @@
             <div class="col-md-4">
                 <label class="form-label">Clinic name</label>
                 <input
-                    v-model="unit.clinics.name"
+                    v-model="clinic.name"
                     type="text"
                     class="form-control"
                     placeholder="Brief description"
@@ -109,13 +109,13 @@
                     <td>{{ clinic.services }}</td>
                     <td>
                         <button
-                            @click="editClinic(index)"
+                            @click="editClinic(clinic.id)"
                             class="btn btn-warning btn-sm"
                         >
                             Edit
                         </button>
                         <button
-                            @click="confirmDeleteclinic(index)"
+                            @click="confirmDeleteclinic(clinic.id)"
                             class="btn btn-danger btn-sm"
                         >
                             Delete
@@ -129,23 +129,12 @@
         <div v-if="showPopup" class="popup-overlay">
             <div class="popup">
                 <h2>Are you sure?</h2>
-                <p v-if="deleteType === 'unit'">
-                    Do you really want to delete this unit? This action cannot
-                    be undone.
-                </p>
-                <p v-if="deleteType === 'clinic'">
+                <p>
                     Do you really want to delete this clinic? This action cannot
                     be undone.
                 </p>
                 <div class="popup-actions">
-                    <button
-                        class="confirm-btn"
-                        @click="
-                            deleteType === 'unit'
-                                ? deleteUnit()
-                                : deleteClinic()
-                        "
-                    >
+                    <button class="confirm-btn" @click="deleteClinic()">
                         Yes, Delete
                     </button>
                     <button class="cancel-btn" @click="closePopup">
@@ -187,36 +176,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- Units List -->
-        <!-- <h3 class="mt-5">Units List</h3>
-        <div
-            v-for="(unit, index) in units"
-            :key="index"
-            class="border p-3 mb-3"
-        >
-            <h5>{{ unit.name }}</h5>
-            <p>{{ unit.address }}</p>
-            <p>Working Hours: {{ unit.hours.from }} - {{ unit.hours.to }}</p>
-
-            <h6>Clinics:</h6>
-            <ul>
-                <li v-for="(clinic, idx) in unit.clinics" :key="idx">
-                    {{ clinic.name }} ({{ clinic.hours.from }} -
-                    {{ clinic.hours.to }}) - Services: {{ clinic.services }}
-                </li>
-            </ul>
-
-            <button @click="editUnit(index)" class="btn btn-warning btn-sm">
-                Update
-            </button>
-            <button
-                @click="confirmDeleteUnit(index)"
-                class="btn btn-danger btn-sm"
-            >
-                Delete
-            </button>
-        </div> -->
     </div>
 </template>
 
@@ -227,7 +186,7 @@ export default {
     data() {
         return {
             unit: {
-                id: 0,
+                id: null,
                 name: "",
                 address: "",
                 hours: {
@@ -235,11 +194,11 @@ export default {
                     to: "",
                 },
                 clinics: [],
-            working_days:[],
-            phone_number: "",
+                working_days: [],
+                phone_number: "",
             },
             clinic: {
-                id: 0,
+                id: null,
                 name: "",
                 hours: {
                     from: "",
@@ -247,8 +206,6 @@ export default {
                 },
                 services: [],
             },
-            editIndex: null,
-            editClinicIndex: null,
             errors: {
                 unit: {
                     name: false,
@@ -268,9 +225,8 @@ export default {
                 },
             },
             showPopup: false,
-            clinicToDeleteIndex: null,
-            unitToDeleteIndex: null,
-            deleteType: null,
+            clinicToDeleteId: null,
+
         };
     },
 
@@ -279,7 +235,6 @@ export default {
         return { unitStore };
     },
     created() {
-        debugger
         const id = parseInt(this.$route.params.id);
         if (id) {
             this.unit = this.unitStore.getUnitById(id);
@@ -295,13 +250,11 @@ export default {
                 hasError = true;
             }
             if (!this.clinic.hours.from) {
-                this.errors.clinic.hours = this.errors.clinic.hours || {};
                 this.errors.clinic.hours.from = true;
                 hasError = true;
             }
 
             if (!this.clinic.hours.to) {
-                this.errors.clinic.hours = this.errors.clinic.hours || {};
                 this.errors.clinic.hours.to = true;
                 hasError = true;
             }
@@ -312,15 +265,17 @@ export default {
             }
 
             if (!hasError) {
-                if (this.editClinicIndex !== null) {
-                    this.unit.clinics[this.editClinicIndex] = {
-                        ...this.clinic,
-                    };
-                    this.editClinicIndex = null;
+                if (this.clinic.id) {
+                    const indexToEdit = this.unit.clinics.findIndex(
+                        (c) => c.id === this.clinic.id
+                    );
+                    this.unit.clinics[indexToEdit] = { ...this.clinic };
                 } else {
-                    this.unit.clinics.push({ ...this.clinic });
+                    const newId = this.unit.clinics.length + 1;
+                    this.unit.clinics.push({ ...this.clinic, id: newId });
                 }
                 this.clinic = {
+                    id: null,
                     name: "",
                     hours: { from: "", to: "" },
                     services: "",
@@ -328,7 +283,6 @@ export default {
             }
         },
         addUnit() {
-            // debugger
             this.resetErrors();
             let hasError = false;
 
@@ -353,72 +307,58 @@ export default {
             }
 
             if (!hasError) {
-                if (this.id !== null) {
+                if (this.unit.id !== null) {
                     this.unitStore.updateUnit(this.unit);
-                    this.id = null;
                 } else {
-                    // this.units.push({ ...this.unit });
                     this.unitStore.addUnit(this.unit);
                 }
                 this.clearFields();
             }
         },
 
-        confirmDeleteclinic(index) {
-            this.showPopup = true; // عرض النافذة
-            this.clinicToDeleteIndex = index; // تحديد العيادة المراد حذفها
+        confirmDeleteclinic(id) {
+            this.showPopup = true;   
+            this.clinicToDeleteId = id;    
             this.deleteType = "clinic";
         },
         deleteClinic() {
-            if (this.clinicToDeleteIndex !== null) {
-                this.unit.clinics.splice(this.clinicToDeleteIndex, 1); // حذف العيادة
-                this.clinicToDeleteIndex = null; // إعادة تعيين المؤشر
-                this.showPopup = false; // إغلاق النافذة
+            if (this.clinicToDeleteId !== null) {
+                const indexToDelete = this.unit.clinics.findIndex(
+                    (c) => c.id === this.clinic.id
+                );
+                this.unit.clinics.splice(indexToDelete, 1); 
+                this.clinicToDeleteId = null; 
+                this.showPopup = false; 
                 this.deleteType = null;
             }
         },
-        editClinic(index) {
-            this.clinic = { ...this.unit.clinics[index] };
-            this.editClinicIndex = index;
+        editClinic(clinic_id) {
+            debugger;
+            const clinicToEdit = this.unit.clinics.filter(
+                (c) => c.id === clinic_id
+            )[0];
+            this.clinic = { ...clinicToEdit };
         },
 
-        confirmDeleteUnit(index) {
-            this.showPopup = true;
-            this.unitToDeleteIndex = index;
-            this.deleteType = "unit";
-        },
-        deleteUnit() {
-            if (this.unitToDeleteIndex !== null) {
-                this.units.splice(this.unitToDeleteIndex, 1);
-                this.unitToDeleteIndex = null;
-                this.showPopup = false;
-                this.deleteType = null;
-            }
-        },
         closePopup() {
             this.showPopup = false;
-            this.clinicToDeleteIndex = null;
-            this.unitToDeleteIndex = null;
+            this.clinicToDeleteId = null;
             this.deleteType = null;
-        },
-        editUnit(index) {
-            this.unit = { ...this.units[index] };
-            this.editIndex = index;
         },
         clearFields() {
             this.unit = {
+                id: null,
                 name: "",
                 address: "",
                 hours: { from: "", to: "" },
                 clinics: [],
             };
             this.clinic = {
+                id: null,
                 name: "",
                 hours: { from: "", to: "" },
                 services: "",
             };
-            this.editIndex = null;
-            this.editClinicIndex = null;
             this.resetErrors();
         },
         resetErrors() {

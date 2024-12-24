@@ -1,7 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { units as demoUnits, activities as demoActivities, scientificResearch as demoResearch} from "../utils/dataUtil"; // Import mock data
-
+import {
+    units as demoUnits,
+    activities as demoActivities,
+    scientificResearch as demoResearch,
+} from "../utils/dataUtil"; // Import mock data
+import axios from "axios";
 export const useDataStore = defineStore("dataStore", () => {
     // Define reactive this using reactive() or ref()
 
@@ -11,13 +15,19 @@ export const useDataStore = defineStore("dataStore", () => {
     const loading = ref(false);
     const error = ref(null);
     const nextId = ref(1);
+
     // Define actions inside the setup function
     const fetch = async () => {
         loading.value = true;
         error.value = null;
         try {
             // Simulating API call
-            units.value = await Promise.resolve(demoUnits);
+            // Fetching units data using Axios
+            const unitsResponse = await axios.get("http://localhost:8000/data");
+            units.value = unitsResponse.data;
+
+            // units.value = await Promise.resolve(demoUnits);
+
             nextId.value = units.value.length + 1;
             activities.value = await Promise.resolve(demoActivities);
             research.value = await Promise.resolve(demoResearch);
@@ -34,10 +44,16 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
-            // Simulating API call
             const newUnitWithId = { ...newUnit, id: nextId.value++ }; // Generate unique ID
-            units.value.push(newUnitWithId);
-            return Promise.resolve(newUnitWithId); // Return the new unit
+            newUnitWithId.hours.from_time = newUnitWithId.hours.from; 
+            // Simulating API call
+            const response = await axios.post(
+                "http://localhost:8000/data",
+                newUnitWithId
+            );
+            const addedUnit = response.data.unit; // Access the returned unit data
+            units.value.push(addedUnit);
+            return Promise.resolve(addedUnit); // Return the new unit
         } catch (err) {
             error.value = "Failed to add unit";
         } finally {
@@ -49,12 +65,18 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
+            // Simulating API call
+            const response = await axios.put(
+                `http://localhost:8000/data/${updatedUnit.id}`,
+                updatedUnit
+            );
+            const upUnit = response.data.unit;
             const index = units.value.findIndex(
-                (unit) => unit.id === updatedUnit.id
+                (unit) => unit.id === upUnit.id
             );
             if (index !== -1) {
                 units.value[index] = {
-                    ...updatedUnit,
+                    ...upUnit,
                 };
                 return Promise.resolve(units.value[index]); // Return the updated unit
             } else {
@@ -76,7 +98,12 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
-            const index = units.value.getUnitById(unitId);
+            // Simulating API call
+            await axios.delete(`http://localhost:8000/data/${unitId}`);
+            // const response = await fetch(`http://localhost:8000/data/${unitId}`, {
+            //     method: "DELETE",
+            // });
+            const index = units.value.findIndex((unit) => unit.id === unitId);
             if (index !== -1) {
                 units.value.splice(index, 1);
                 return Promise.resolve(); // Return success
@@ -89,7 +116,6 @@ export const useDataStore = defineStore("dataStore", () => {
             loading.value = false;
         }
     };
-
 
     const addActivity = async (newActivity) => {
         // debugger
@@ -131,7 +157,9 @@ export const useDataStore = defineStore("dataStore", () => {
 
     const getActivityById = (activityId) => {
         // debugger
-        const result = activities.value.find((activity) => activity.id === activityId);
+        const result = activities.value.find(
+            (activity) => activity.id === activityId
+        );
         return result;
     };
 
@@ -195,7 +223,9 @@ export const useDataStore = defineStore("dataStore", () => {
 
     const getResearchById = (ResearchId) => {
         // debugger
-        const result = research.value.find((research) => research.id === ResearchId);
+        const result = research.value.find(
+            (research) => research.id === ResearchId
+        );
         return result;
     };
     const deleteResearch = async (researchId) => {
@@ -216,7 +246,7 @@ export const useDataStore = defineStore("dataStore", () => {
         } finally {
             loading.value = false;
         }
-    }
+    };
     // Return the reactive this and actions from the setup function
     return {
         units,
@@ -236,6 +266,6 @@ export const useDataStore = defineStore("dataStore", () => {
         addResearch,
         updateResearch,
         getResearchById,
-        deleteResearch
+        deleteResearch,
     };
 });
