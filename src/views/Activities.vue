@@ -114,9 +114,9 @@ export default {
 
             // Sort activities based on the selected sort mode (Newest or Oldest)
             if (this.sortMode === "newest") {
-                filtered.sort((a, b) => new Date(b.date_start) - new Date(a.date_start));
+                filtered.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
             } else if (this.sortMode === "oldest") {
-                filtered.sort((a, b) => new Date(a.date_start) - new Date(b.date_start));
+                filtered.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
             }
 
             return filtered;
