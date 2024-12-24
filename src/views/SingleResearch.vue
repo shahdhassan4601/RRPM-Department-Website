@@ -17,12 +17,12 @@
                             research.authors"
                         :key="index"
                     >
-                        {{ author.name }}
+                        {{ "Author(s): " + author.name }}
                     </span>
             </div>
             <div class="col-md-6 text-md-end">
-                <span class="publish-date">{{
-                    getTranslatedData(research.publishing_date)
+                <span class="publish-date">{{ "Published: " +
+                    getTranslatedData(research.publicationDate)
                 }}</span>
             </div>
         </div>
@@ -67,7 +67,7 @@
         <!-- Related Research Section -->
         <div class="row mb-3">
             <div class="col-12">
-                <h5>{{ getTranslatedData(relatedResearchTitle) + ":" }}</h5>
+                <!-- <h5>{{ getTranslatedData(relatedResearchTitle) + ":" }}</h5> -->
             </div>
         </div>
         <div class="row">
@@ -87,7 +87,7 @@
     </div>
 </template>
 <script>
-import { scientificResearch } from "../utils/dataUtil";
+import { useDataStore } from '../stores/dataStore';
 export default {
     name: "SingleResearch",
     props: {
@@ -104,12 +104,14 @@ export default {
 
         };
     },
+    setup() {
+        const researchStore = useDataStore();
+        return { researchStore };
+    },
     created() {
-        const researchId = parseInt(this.$route.params.id, 10); // Get the research ID from the route params
+        const researchId = parseInt(this.$route.params.id); // Get the research ID from the route params
         // Find the research in the scientificResearch array by ID
-        const research = scientificResearch.find(
-            (research) => research.SR_id === researchId
-        );
+        const research = this.researchStore.getResearchById(researchId);
         if (research) {
             this.research = research; // Set the research data
         } else {

@@ -19,19 +19,19 @@
                     placeholder="Search..."
                     v-model="searchQuery"
                 />
-                <select
+                <!-- <select
                     class="form-select form-select-sm me-2"
                     v-model="selectedAuthor"
                 >
                     <option value="">Author</option>
                     <option
                         v-for="author in uniqueAuthors"
-                        :key="author"
-                        :value="author"
+                        :key="author.id"
+                        :value="author.id"
                     >
-                        {{ author }}
+                        {{ author.name }}
                     </option>
-                </select>
+                </select> -->
                 <select
                     class="form-select form-select-sm me-2"
                     v-model="selectedDate"
@@ -46,7 +46,7 @@
                 <div
                     class="col-12"
                     v-for="research in filteredResearches"
-                    :key="research.SR_id"
+                    :key="research.id"
                 >
                     <div class="activity-card d-flex justify-content-between">
                         <div>
@@ -56,7 +56,7 @@
                                 Authors:
                                 <span
                                     v-for="(author, index) in research.authors"
-                                    :key="author.author_id"
+                                    :key="author.id"
                                 >
                                     {{ author.name }}
                                     <span
@@ -68,7 +68,7 @@
                                 </span>
                                 |
                                 <i class="bi bi-calendar"></i>
-                                Published: {{ research.publishing_date }}
+                                Published: {{ research.publicationDate }}
                             </p>
                             <p class="mb-1">
                                 <i class="bi bi-building"></i>
@@ -79,7 +79,7 @@
                             <router-link
                                 :to="{
                                     name: 'SingleResearch',
-                                    params: { id: research.SR_id },
+                                    params: { id: research.id },
                                 }"
                                 class="text-decoration-none"
                             >
@@ -89,13 +89,13 @@
                         <div class="d-flex align-items-start">
                             <button
                                 class="btn btn-secondary btn-sm me-2"
-                                @click="editResearch(research.SR_id)"
+                                @click="editResearch(research.id)"
                             >
                                 Edit
                             </button>
                             <button
                                 class="btn btn-danger btn-sm me-2"
-                                @click="confirmDelete(research.SR_id)"
+                                @click="confirmDelete(research.id)"
                             >
                                 Delete
                             </button>
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { scientificResearch } from "../utils/dataUtil";
+import { useDataStore } from "../stores/dataStore";
 
 export default {
     name: "ScientificResearch",
@@ -117,25 +117,39 @@ export default {
             searchQuery: "",
             selectedAuthor: "",
             selectedDate: "newest",
-            scientificResearch: scientificResearch, // Use data from dataUtil.js
         };
+    },
+    setup() {
+        const researchStore = useDataStore();
+        return { researchStore };
     },
     computed: {
         uniqueAuthors() {
-            // Extract unique authors from research data
-            const authorsSet = new Set();
-            this.scientificResearch.forEach((research) => {
-                research.authors.forEach((author) => authorsSet.add(author));
+            const authorsDict = {};
+            this.researchStore.research.forEach((research) => {
+                research.authors.forEach((author) => {
+                    if (!authorsDict[author.id]) {
+                        authorsDict[author.id] = author.name;
+                    }
+                });
             });
-            return [...authorsSet];
+
+            // Convert the dictionary to an array of objects and sort by name
+            return Object.entries(authorsDict).map(([id, name]) => ({
+                id,
+                name,
+            }));
         },
+
         filteredResearches() {
-            let filtered = this.scientificResearch.filter((research) => {
+            let filtered = this.researchStore.research.filter((research) => {
                 const matchesQuery = research.title
                     .toLowerCase()
                     .includes(this.searchQuery.toLowerCase());
                 const matchesAuthor = this.selectedAuthor
-                    ? research.authors.includes(this.selectedAuthor)
+                    ? research.authors.some(
+                          (author) => author.id === this.selectedAuthor
+                      )
                     : true;
                 return matchesQuery && matchesAuthor;
             });
@@ -159,17 +173,15 @@ export default {
         },
     },
     methods: {
-        editResearch(SR_id) {
+        editResearch(researchId) {
             this.$router.push({
                 path: `/research-admin`,
-                query: { index: SR_id },
+                query: { id: researchId },
             });
         },
         confirmDelete(SR_id) {
             if (confirm("Are you sure you want to delete this research?")) {
-                this.scientificResearch = this.scientificResearch.filter(
-                    (research) => research.SR_id !== SR_id
-                );
+                this.researchStore.deleteResearch(SR_id);
             }
         },
     },

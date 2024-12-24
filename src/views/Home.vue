@@ -18,7 +18,7 @@
           <div class="row text-center g-4">
             <div class="col-md-4" v-for="unit in units" :key="unit.id" @mouseover="hover = unit.unit_id" @mouseleave="hover = null">
               <div class="unit-card shadow-lg rounded" :class="{'scale-up': hover === unit.unit_id}">
-                <img :src="unit.image || 'https://via.placeholder.com/350x200'" :alt="unit.name" class="img-fluid mb-3">
+                <img :src="'https://via.placeholder.com/350x200'" :alt="unit.name" class="img-fluid mb-3">
                 <div class="unit-card-body">
                   <h5>{{ unit.name }}</h5>
                   <p class="unit-description">{{ unit.description ? unit.description.substring(0, 100) + '...' : 'No description available' }}</p>
@@ -64,13 +64,13 @@
           <h3 class="mb-4 text-center">Read Latest Scientific Insights</h3>
           <p class="mb-5 text-center">Discover groundbreaking research and advancements in medical science.</p>
           <div class="grid-container">
-            <div class="grid-item" v-for="insight in insights" :key="insight.SR_id">
+            <div class="grid-item" v-for="insight in insights" :key="insight.id">
               <div class="insight-card shadow-lg rounded">
                 <img :src="insight.image || 'https://via.placeholder.com/200x200'" :alt="insight.title" class="img-fluid rounded-circle mb-3">
                 <div class="insight-details">
                   <h5 class="text-center">{{ insight.title }}</h5>
-                  <p class="text-muted text-center">{{ insight.publishing_date }}</p>
-                  <router-link :to="{ name: 'SingleResearch', params: { id: insight.SR_id } }" class="btn btn-outline-primary w-100">Explore</router-link>
+                  <p class="text-muted text-center">{{ insight.publicationDate }}</p>
+                  <router-link :to="{ name: 'SingleResearch', params: { id: insight.id } }" class="btn btn-outline-primary w-100">Explore</router-link>
                 </div>
               </div>
             </div>

@@ -100,7 +100,7 @@ export default {
     },
     computed: {
         filteredActivities() {
-            debugger
+            // debugger
             // Filter activities based on search query and status
             let filtered = this.activityStore.activities.filter((activity) => {
                 const matchesQuery = activity.title

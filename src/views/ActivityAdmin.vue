@@ -266,7 +266,7 @@ export default {
         return { activityStore };
     },
     created() {
-        debugger
+        // debugger
         // الحصول على index من الـ route
         const id = parseInt(this.$route.query.id);
 
@@ -279,7 +279,7 @@ export default {
 
     methods: {
         submitForm() {
-            debugger
+            // debugger
             const id = parseInt(this.$route.query.id);
 
             this.titleError =

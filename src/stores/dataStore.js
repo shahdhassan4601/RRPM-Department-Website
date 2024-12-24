@@ -68,7 +68,7 @@ export const useDataStore = defineStore("dataStore", () => {
     };
 
     const getUnitById = (unitId) => {
-        debugger
+        // debugger
         const result = units.value.find((unit) => unit.id === unitId);
         return result;
     };
@@ -76,9 +76,7 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
-            const index = units.value.findIndex(
-                (unit) => unit.id === unitId
-            );
+            const index = units.value.getUnitById(unitId);
             if (index !== -1) {
                 units.value.splice(index, 1);
                 return Promise.resolve(); // Return success
@@ -94,7 +92,7 @@ export const useDataStore = defineStore("dataStore", () => {
 
 
     const addActivity = async (newActivity) => {
-        debugger
+        // debugger
         loading.value = true;
         error.value = null;
         try {
@@ -131,9 +129,9 @@ export const useDataStore = defineStore("dataStore", () => {
         }
     };
 
-    const getActivityById = (unitId) => {
-        debugger
-        const result = activities.value.find((unit) => unit.id === unitId);
+    const getActivityById = (activityId) => {
+        // debugger
+        const result = activities.value.find((activity) => activity.id === activityId);
         return result;
     };
 
@@ -157,6 +155,68 @@ export const useDataStore = defineStore("dataStore", () => {
         }
     };
 
+    const addResearch = async (newResearch) => {
+        // debugger
+        loading.value = true;
+        error.value = null;
+        try {
+            // Simulating API call
+            const newResearchWithId = { ...newResearch, id: nextId.value++ }; // Generate unique ID
+            research.value.push(newResearchWithId);
+            return Promise.resolve(newResearchWithId); // Return the new Activity
+        } catch (err) {
+            error.value = "Failed to add Research";
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    const updateResearch = async (updatedResearch) => {
+        loading.value = true;
+        error.value = null;
+        try {
+            const index = activities.value.findIndex(
+                (research) => research.id === updatedResearch.id
+            );
+            if (index !== -1) {
+                research.value[index] = {
+                    ...updatedResearch,
+                };
+                return Promise.resolve(research.value[index]); // Return the updated unit
+            } else {
+                throw new Error("Research not found");
+            }
+        } catch (err) {
+            error.value = "Failed to update Research";
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    const getResearchById = (ResearchId) => {
+        // debugger
+        const result = research.value.find((research) => research.id === ResearchId);
+        return result;
+    };
+    const deleteResearch = async (researchId) => {
+        loading.value = true;
+        error.value = null;
+        try {
+            const index = research.value.findIndex(
+                (research) => research.id === researchId
+            );
+            if (index !== -1) {
+                research.value.splice(index, 1);
+                return Promise.resolve(); // Return success
+            } else {
+                throw new Error("research not found");
+            }
+        } catch (err) {
+            error.value = "Failed to delete research";
+        } finally {
+            loading.value = false;
+        }
+    }
     // Return the reactive this and actions from the setup function
     return {
         units,
@@ -173,5 +233,9 @@ export const useDataStore = defineStore("dataStore", () => {
         updateActivity,
         getActivityById,
         deleteActivity,
+        addResearch,
+        updateResearch,
+        getResearchById,
+        deleteResearch
     };
 });
