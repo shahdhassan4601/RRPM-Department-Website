@@ -100,6 +100,7 @@ export default {
         };
     },
     setup() {
+    
         const unitStore = useDataStore();
         return { unitStore };
     },

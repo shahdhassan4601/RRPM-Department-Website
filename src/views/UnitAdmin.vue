@@ -27,6 +27,63 @@
             <div v-if="errors.unit?.address" class="text-danger">
                 Address is required
             </div>
+            
+            <label class="form-label mt-3">Phone Number</label>
+            <input
+                v-model="unit.phone_number"
+                type="text"
+                class="form-control"
+                placeholder="Enter phone number"
+                :class="{ 'is-invalid': errors.unit?.phone_number }"
+            />
+            <div v-if="errors.unit?.phone_number" class="text-danger">
+                Phone number is required
+            </div>
+
+            <label class="form-label mt-3">Working Days</label>
+            <select
+                v-model="unit.working_days"
+                multiple
+                class="form-control"
+                :class="{ 'is-invalid': errors.unit?.working_days }"
+            >
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+            <div v-if="errors.unit?.working_days" class="text-danger">
+                Working days are required
+            </div>
+        </div>
+
+        <!-- Unit Working Hours -->
+        <div class="mb-4">
+            <label class="form-label">Unit working hours:</label>
+            <div class="input-group">
+                <input
+                    v-model="unit.hours.from"
+                    type="time"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.unit?.hours?.from }"
+                />
+                <span class="input-group-text">to</span>
+                <input
+                    v-model="unit.hours.to"
+                    type="time"
+                    class="form-control"
+                    :class="{ 'is-invalid': errors.unit?.hours?.to }"
+                />
+            </div>
+            <div v-if="errors.unit?.hours?.from" class="text-danger">
+                Start time is required
+            </div>
+            <div v-if="errors.unit?.hours?.to" class="text-danger">
+                End time is required
+            </div>
         </div>
 
         <!-- Clinics Section -->
@@ -38,7 +95,7 @@
                     v-model="clinic.name"
                     type="text"
                     class="form-control"
-                    placeholder="Brief description"
+                    placeholder="Enter the clinic name"
                     :class="{ 'is-invalid': errors.clinic?.name }"
                 />
                 <div v-if="errors.clinic?.name" class="text-danger">
@@ -170,11 +227,10 @@
             </div>
 
             <div class="mt-3">
-                <button @click="addUnit" class="btn btn-primary">Save</button>
-                <button @click="clearFields" class="btn btn-secondary">
-                    Clear
-                </button>
-            </div>
+            <button @click="addUnit" class="btn btn-primary">Save</button>
+            <button @click="clearFields" class="btn btn-secondary">
+                Clear
+            </button>
         </div>
     </div>
 </template>
@@ -226,10 +282,8 @@ export default {
             },
             showPopup: false,
             clinicToDeleteId: null,
-
         };
     },
-
     setup() {
         const unitStore = useDataStore();
         return { unitStore };
@@ -294,6 +348,14 @@ export default {
                 this.errors.unit.address = true;
                 hasError = true;
             }
+            if (!this.unit.phone_number) {
+                this.errors.unit.phone_number = true;
+                hasError = true;
+            }
+            if (!this.unit.working_days.length) {
+                this.errors.unit.working_days = true;
+                hasError = true;
+            }
             if (!this.unit.hours.from) {
                 this.errors.unit.hours = this.errors.unit.hours || {};
                 this.errors.unit.hours.from = true;
@@ -351,6 +413,8 @@ export default {
                 name: "",
                 address: "",
                 hours: { from: "", to: "" },
+                working_days: [],
+                phone_number: "",
                 clinics: [],
             };
             this.clinic = {
@@ -366,10 +430,9 @@ export default {
                 unit: {
                     name: false,
                     address: false,
-                    hours: {
-                        from: false,
-                        to: false,
-                    },
+                    hours: { from: false, to: false },
+                    phone_number: false,
+                    working_days: false,
                 },
                 clinic: {
                     name: false,

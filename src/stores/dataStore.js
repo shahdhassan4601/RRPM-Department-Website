@@ -4,6 +4,7 @@ import {
     units as demoUnits,
     activities as demoActivities,
     scientificResearch as demoResearch,
+    scientificResearch,
 } from "../utils/dataUtil"; // Import mock data
 import axios from "axios";
 export const useDataStore = defineStore("dataStore", () => {
@@ -15,7 +16,6 @@ export const useDataStore = defineStore("dataStore", () => {
     const loading = ref(false);
     const error = ref(null);
     const nextId = ref(1);
-    const token = ref(null);
 
     // Define actions inside the setup function
     const fetch = async () => {
@@ -24,14 +24,20 @@ export const useDataStore = defineStore("dataStore", () => {
         try {
             // Simulating API call
             // Fetching units data using Axios
-            const unitsResponse = await axios.get("http://localhost:8000/data");
-            units.value = unitsResponse.data;
+            const unitsResponse = await axios.get("http://localhost/webproject/FetchUnits.php");
+            units.value = unitsResponse.data.units;
 
-            // units.value = await Promise.resolve(demoUnits);
+            const activitiesResponse = await axios.get("http://localhost/webproject/FetchActivities.php");
+            activities.value = activitiesResponse.data.activities;
 
+            const  researchResponse = await axios.get("http://localhost/webproject/FetchSRs.php");
+            research.value =  researchResponse.data.scientificResearch;
+
+            
             nextId.value = units.value.length + 1;
-            activities.value = await Promise.resolve(demoActivities);
-            research.value = await Promise.resolve(demoResearch);
+            // units.value = await Promise.resolve(demoUnits);
+            // activities.value = await Promise.resolve(demoActivities);
+            // research.value = await Promise.resolve(demoResearch);
             //   debugger
         } catch (err) {
             error.value = "Failed to fetch units";
@@ -41,7 +47,6 @@ export const useDataStore = defineStore("dataStore", () => {
     };
 
     const addUnit = async (newUnit) => {
-        // debugger
         loading.value = true;
         error.value = null;
         try {
@@ -119,7 +124,6 @@ export const useDataStore = defineStore("dataStore", () => {
     };
 
     const addActivity = async (newActivity) => {
-        // debugger
         loading.value = true;
         error.value = null;
         try {
@@ -185,7 +189,6 @@ export const useDataStore = defineStore("dataStore", () => {
     };
 
     const addResearch = async (newResearch) => {
-        // debugger
         loading.value = true;
         error.value = null;
         try {
@@ -223,7 +226,6 @@ export const useDataStore = defineStore("dataStore", () => {
     };
 
     const getResearchById = (ResearchId) => {
-        // debugger
         const result = research.value.find(
             (research) => research.id === ResearchId
         );

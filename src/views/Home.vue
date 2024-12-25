@@ -41,7 +41,7 @@
                 <div class="card-body">
                   <h5 class="card-title">{{ activity.title }}</h5>
                   <p class="card-text">{{ activity.description ? activity.description.substring(0, 100) + '...' : 'No description available' }}</p>
-                  <p class="text-muted">Date: {{ activity.date_start }}</p>
+                  <p class="text-muted">Date: {{ activity.startDate }}</p>
                   <router-link :to="{ name: 'SingleActivity', params: { id: activity.id } }" class="btn btn-primary">Explore</router-link>
                 </div>
               </div>

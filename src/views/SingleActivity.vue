@@ -118,7 +118,7 @@
                     class="badge badge-pill"
                     :class="`tag-badge`"
                 >
-                    {{ "# " + tag.keyword }}
+                    {{ "# " + tag }}
                 </span>
             </div>
         </div>
@@ -149,9 +149,8 @@ export default {
     created() {
         const activityId = parseInt(this.$route.params.id); // Get the activity ID from the route params
         // Find the activity in the activities array by ID
-        const activity = this.activityStore.getActivityById(activityId);
-        if (activity) {
-            this.activity = activity; // Set the activity data
+        if (activityId) {
+            this.activity = this.activityStore.getActivityById(activityId);
         } else {
             console.error("Activity not found");
         }
@@ -160,7 +159,8 @@ export default {
     methods: {
         // Get the unit name based on the unit_id
         getUnitName(unitId) {
-            const unit = this.activityStore.units.find((unit) => unit.unit_id === unitId);
+            debugger
+            const unit = this.activityStore.getUnitById(unitId);
             return unit ? unit.name : "Unknown Unit"; // Return unit name or "Unknown Unit" if not found
         },
 

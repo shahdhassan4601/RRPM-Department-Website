@@ -51,13 +51,15 @@
                     </li>
                 </ul>
             </nav>
-            <div v-if="isLoggedin">
-                <LogOutButton @click="isLoggedin = false" class="me-2" />
+            <div class="d-flex align-items-center">
+                <SignUpButton class="me-2" />
+                <div v-if="isLoggedin">
+                    <LogOutButton @click="isLoggedin = false" class="me-2" />
+                </div>
+                <div v-else>
+                    <LogInButton @click="isLoggedin = true" class="me-2" />
+                </div>
             </div>
-            <div v-else>
-                <LogInButton @click="isLoggedin = true" class="me-2" />
-            </div>
-            <SignUpButton class="me-2" />
             <LangSwitcher
                 :currentLang="selectedLang"
                 @change-language="changeLanguage"

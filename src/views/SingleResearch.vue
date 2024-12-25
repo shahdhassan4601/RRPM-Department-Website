@@ -13,11 +13,11 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <span class="author-name m-2"
-                        v-for="(author, index) in 
+                        v-for="(author) in 
                             research.authors"
-                        :key="index"
+                        :key="author.author_id"
                     >
-                        {{ "Author(s): " + author.name }}
+                        {{ "Author(s): " + author.author_name }}
                     </span>
             </div>
             <div class="col-md-6 text-md-end">
@@ -111,9 +111,8 @@ export default {
     created() {
         const researchId = parseInt(this.$route.params.id); // Get the research ID from the route params
         // Find the research in the scientificResearch array by ID
-        const research = this.researchStore.getResearchById(researchId);
-        if (research) {
-            this.research = research; // Set the research data
+        if (researchId) {
+            this.research = this.researchStore.getResearchById(researchId);
         } else {
             console.error("Research not found");
         }

@@ -56,9 +56,9 @@
                                 Authors:
                                 <span
                                     v-for="(author, index) in research.authors"
-                                    :key="author.id"
+                                    :key="author.author_id"
                                 >
-                                    {{ author.name }}
+                                    {{ author.author_name }}
                                     <span
                                         v-if="
                                             index < research.authors.length - 1
@@ -148,7 +148,7 @@ export default {
                     .includes(this.searchQuery.toLowerCase());
                 const matchesAuthor = this.selectedAuthor
                     ? research.authors.some(
-                          (author) => author.id === this.selectedAuthor
+                          (author) => author.author_id === this.selectedAuthor
                       )
                     : true;
                 return matchesQuery && matchesAuthor;
@@ -158,14 +158,14 @@ export default {
             if (this.selectedDate === "newest") {
                 filtered.sort(
                     (a, b) =>
-                        new Date(b.publishing_date) -
-                        new Date(a.publishing_date)
+                        new Date(b.publicationDate) -
+                        new Date(a.publicationDate)
                 );
             } else if (this.selectedDate === "oldest") {
                 filtered.sort(
                     (a, b) =>
-                        new Date(a.publishing_date) -
-                        new Date(b.publishing_date)
+                        new Date(a.publicationDate) -
+                        new Date(b.publicationDate)
                 );
             }
 
