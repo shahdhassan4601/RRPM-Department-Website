@@ -6,8 +6,8 @@
             <div class="row no-gutters">
                 <!-- Section for form -->
                 <div class="col-md-6 p-4">
-                    <h3 class="text-center mb-4">Log in</h3>
-                    <form @submit.prevent="handleLogin">
+                    <h3 class="text-center mb-4">Sign up</h3>
+                    <form @submit.prevent="handleSignUp">
                         <div class="form-group mb-3">
                             <label for="username" class="form-label"
                                 >Username</label
@@ -73,7 +73,7 @@
                                 role="status"
                                 aria-hidden="true"
                             ></span>
-                            {{ loading ? "Logging in..." : "Login" }}
+                            {{ loading ? "Signing up..." : "Sign up" }}
                         </button>
                     </form>
                 </div>
@@ -97,7 +97,7 @@
 <script>
 import { useDataStore } from "../stores/dataStore";
 export default {
-    name: "LoginPage",
+    name: "SignUpPage",
     data() {
         return {
             user: { username: "", password: "" },
@@ -135,15 +135,15 @@ export default {
 
             return isValid;
         },
-        async handleLogin() {
+        async handleSignUp() {
             if (!this.validateForm()) return;
 
             this.loading = true;
             this.errorMessage = "";
 
             try {
-                await this.dataStore.login(user);
-                this.$router.push("/");
+                await this.dataStore.signup(user);
+                this.$router.push("/login");
             } catch (error) {
                 this.errorMessage = "Invalid credentials, please try again.";
             } finally {

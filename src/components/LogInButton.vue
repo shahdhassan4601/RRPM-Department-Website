@@ -8,6 +8,7 @@
     methods: {
       handleClick() {
         this.$router.push("/login");
+
       },
     },
   };

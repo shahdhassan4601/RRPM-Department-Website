@@ -51,6 +51,13 @@
                     </li>
                 </ul>
             </nav>
+            <div v-if="isLoggedin">
+                <LogOutButton @click="isLoggedin = false" class="me-2" />
+            </div>
+            <div v-else>
+                <LogInButton @click="isLoggedin = true" class="me-2" />
+            </div>
+            <SignUpButton class="me-2" />
             <LangSwitcher
                 :currentLang="selectedLang"
                 @change-language="changeLanguage"
@@ -100,6 +107,12 @@
                             >Contact us</router-link
                         >
                     </li>
+                    <li class="nav-item">
+                        <LangSwitcher
+                            :currentLang="selectedLang"
+                            @change-language="changeLanguage"
+                        />
+                    </li>
                 </ul>
             </div>
         </div>
@@ -107,8 +120,22 @@
 </template>
 
 <script>
+import LogInButton from "./LogInButton.vue";
+import LogOutButton from "./LogOutButton.vue";
+import SignUpButton from "./SignUpButton.vue";
+
 export default {
     name: "Header",
+    data() {
+        return {
+            isloggedin: false,
+        };
+    },
+    components: {
+        LogInButton,
+        LogOutButton,
+        SignUpButton,
+    },
 };
 </script>
 

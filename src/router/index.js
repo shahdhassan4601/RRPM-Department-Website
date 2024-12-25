@@ -6,6 +6,7 @@ import Research from "../views/Research.vue";
 import ResearchAdmin from "../views/ResearchAdmin.vue";
 import Units from "../views/Units.vue";
 import LoginPage from "../views/SignInForm.vue";
+import SignUpForm from "../views/SignUpForm.vue";
 import UnitAdmin from "../views/UnitAdmin.vue";
 import ContactUs from "../views/ContactUs.vue";
 import Home from "../views/Home.vue";
@@ -35,6 +36,7 @@ const routes = [
     },
     { path: "/units", component: Units },
     { path: "/login", component: LoginPage },
+    { path: "/signup", component: SignUpForm },
     { path: "/unit-admin", component: UnitAdmin },
     {
         path: "/unit-admin/:id", // The :id is the dynamic segment

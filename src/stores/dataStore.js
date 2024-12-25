@@ -15,6 +15,7 @@ export const useDataStore = defineStore("dataStore", () => {
     const loading = ref(false);
     const error = ref(null);
     const nextId = ref(1);
+    const token = ref(null);
 
     // Define actions inside the setup function
     const fetch = async () => {
@@ -45,7 +46,7 @@ export const useDataStore = defineStore("dataStore", () => {
         error.value = null;
         try {
             const newUnitWithId = { ...newUnit, id: nextId.value++ }; // Generate unique ID
-            newUnitWithId.hours.from_time = newUnitWithId.hours.from; 
+            newUnitWithId.hours.from_time = newUnitWithId.hours.from;
             // Simulating API call
             const response = await axios.post(
                 "http://localhost:8000/data",
@@ -247,6 +248,24 @@ export const useDataStore = defineStore("dataStore", () => {
             loading.value = false;
         }
     };
+
+    const login = async (user) => {
+        debugger;
+        const response = await axios.post("http://localhost:8000/login", {
+            username: user.username,
+            password: user.password,
+        });
+        token.value = response.data.token;
+    };
+    const logout = async () => {
+        token.value = null;
+    };
+    const signup = async (user) => {
+        await axios.post("http://localhost:8000/signup", {
+            username: user.username,
+            password: user.password,
+        });
+    };
     // Return the reactive this and actions from the setup function
     return {
         units,
@@ -254,6 +273,7 @@ export const useDataStore = defineStore("dataStore", () => {
         error,
         activities,
         research,
+        token,
         fetch,
         addUnit,
         updateUnit,
@@ -267,5 +287,8 @@ export const useDataStore = defineStore("dataStore", () => {
         updateResearch,
         getResearchById,
         deleteResearch,
+        login,
+        logout,
+        signup,
     };
 });
