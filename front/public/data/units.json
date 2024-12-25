@@ -1,0 +1,30 @@
+[
+    {
+      "title": "Unit 1",
+      "address": "462 South Street, Bakersfield, CA 93301",
+      "phone": "(907) 571-7277",
+      "hours": {
+        "Monday-Friday": "8:00 AM - 8:00 PM",
+        "Saturday": "9:00 AM - 5:00 PM"
+      }
+    },
+    {
+      "title": "Unit 2",
+      "address": "462 South Street, Bakersfield, CA 93301",
+      "phone": "(907) 571-7277",
+      "hours": {
+        "Monday-Friday": "8:00 AM - 8:00 PM",
+        "Saturday": "9:00 AM - 5:00 PM"
+      }
+    },
+    {
+      "title": "Unit 3",
+      "address": "462 South Street, Bakersfield, CA 93301",
+      "phone": "(907) 571-7277",
+      "hours": {
+        "Monday-Friday": "8:00 AM - 8:00 PM",
+        "Saturday": "9:00 AM - 5:00 PM"
+      }
+    }
+  ]
+  
