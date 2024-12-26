@@ -5,9 +5,9 @@ import {
     activities as demoActivities,
     scientificResearch as demoResearch,
     scientificResearch,
-} from "../utils/dataUtil"; // Import mock data
+} from "../utils/dataUtil"; // Import mock units
 import axios from "axios";
-export const useDataStore = defineStore("dataStore", () => {
+export const useDataStore = defineStore("unitsStore", () => {
     // Define reactive this using reactive() or ref()
 
     const units = ref([]);
@@ -15,7 +15,11 @@ export const useDataStore = defineStore("dataStore", () => {
     const research = ref([]);
     const loading = ref(false);
     const error = ref(null);
-    const nextId = ref(1);
+    const token = ref(null);
+    const nextUnitId = ref(1);
+    const nextActivitiesId = ref(1);
+    const nextResearchId = ref(1);
+    const isLoggedIn = ref(false);
 
     // Define actions inside the setup function
     const fetch = async () => {
@@ -23,18 +27,24 @@ export const useDataStore = defineStore("dataStore", () => {
         error.value = null;
         try {
             // Simulating API call
-            // Fetching units data using Axios
-            const unitsResponse = await axios.get("http://localhost/webproject/FetchUnits.php");
-            units.value = unitsResponse.data.units;
+            // Fetching units units using Axios
+            const unitsResponse = await axios.get(
+                "http://localhost:8000/units"
+            );
+            units.value = unitsResponse.data;
 
-            const activitiesResponse = await axios.get("http://localhost/webproject/FetchActivities.php");
-            activities.value = activitiesResponse.data.activities;
+            const activitiesResponse = await axios.get(
+                "http://localhost:8000/activities"
+            );
+            activities.value = activitiesResponse.data;
 
-            const  researchResponse = await axios.get("http://localhost/webproject/FetchSRs.php");
-            research.value =  researchResponse.data.scientificResearch;
+            const  researchResponse = await axios.get("http://localhost:8000/research");
+            research.value =  researchResponse.data;
 
+            nextUnitId.value = units.value.length + 1;
+            nextActivitiesId.value = activities.value.length + 1;
+            nextResearchId.value = research.value.length + 1;
             
-            nextId.value = units.value.length + 1;
             // units.value = await Promise.resolve(demoUnits);
             // activities.value = await Promise.resolve(demoActivities);
             // research.value = await Promise.resolve(demoResearch);
@@ -50,14 +60,14 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
-            const newUnitWithId = { ...newUnit, id: nextId.value++ }; // Generate unique ID
+            const newUnitWithId = { ...newUnit, id: nextUnitId.value++ }; // Generate unique ID
             newUnitWithId.hours.from_time = newUnitWithId.hours.from;
             // Simulating API call
             const response = await axios.post(
-                "http://localhost:8000/data",
+                "http://localhost:8000/units",
                 newUnitWithId
             );
-            const addedUnit = response.data.unit; // Access the returned unit data
+            const addedUnit = response.data.unit; // Access the returned unit units
             units.value.push(addedUnit);
             return Promise.resolve(addedUnit); // Return the new unit
         } catch (err) {
@@ -73,7 +83,7 @@ export const useDataStore = defineStore("dataStore", () => {
         try {
             // Simulating API call
             const response = await axios.put(
-                `http://localhost:8000/data/${updatedUnit.id}`,
+                `http://localhost:8000/units/${updatedUnit.id}`,
                 updatedUnit
             );
             const upUnit = response.data.unit;
@@ -105,10 +115,7 @@ export const useDataStore = defineStore("dataStore", () => {
         error.value = null;
         try {
             // Simulating API call
-            await axios.delete(`http://localhost:8000/data/${unitId}`);
-            // const response = await fetch(`http://localhost:8000/data/${unitId}`, {
-            //     method: "DELETE",
-            // });
+            await axios.delete(`http://localhost:8000/units/${unitId}`);
             const index = units.value.findIndex((unit) => unit.id === unitId);
             if (index !== -1) {
                 units.value.splice(index, 1);
@@ -124,13 +131,24 @@ export const useDataStore = defineStore("dataStore", () => {
     };
 
     const addActivity = async (newActivity) => {
+        debugger
         loading.value = true;
         error.value = null;
         try {
+            
             // Simulating API call
-            const newActivityWithId = { ...newActivity, id: nextId.value++ }; // Generate unique ID
-            activities.value.push(newActivityWithId);
-            return Promise.resolve(newActivityWithId); // Return the new Activity
+            const newActivityWithId = { ...newActivity, id: nextActivitiesId.value++ }; // Generate unique ID
+            //activities.value.push(newActivityWithId);
+            //return Promise.resolve(newActivityWithId); // Return the new Activity
+
+            // Simulating API call
+            const response = await axios.post(
+                "http://localhost:8000/activities",
+                newActivityWithId
+            );
+            const addedActivity = response.data.activity; // Access the returned activity units
+            activities.value.push(addedActivity);
+            return Promise.resolve(addedActivity);
         } catch (err) {
             error.value = "Failed to add Activity";
         } finally {
@@ -142,12 +160,22 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
-            const index = activities.value.findIndex(
-                (activity) => activity.id === updatedActivity.id
+            //const index = activities.value.findIndex(
+            //(activity) => activity.id === updatedActivity.id
+
+            // Simulating API call
+            const response = await axios.put(
+                `http://localhost:8000/activities/${updatedActivity.id}`,
+                updatedActivity
             );
+            const upActivity = response.units.activity;
+            const index = activities.value.findIndex(
+                (activity) => activity.id === upActivity.id
+            );
+
             if (index !== -1) {
                 activities.value[index] = {
-                    ...updatedActivity,
+                    ...upActivity,
                 };
                 return Promise.resolve(activities.value[index]); // Return the updated unit
             } else {
@@ -172,6 +200,10 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
+            await axios.delete(
+                `http://localhost:8000/activities/${activityId}`
+            );
+
             const index = activities.value.findIndex(
                 (activity) => activity.id === activityId
             );
@@ -189,13 +221,23 @@ export const useDataStore = defineStore("dataStore", () => {
     };
 
     const addResearch = async (newResearch) => {
+        debugger
         loading.value = true;
         error.value = null;
         try {
             // Simulating API call
-            const newResearchWithId = { ...newResearch, id: nextId.value++ }; // Generate unique ID
-            research.value.push(newResearchWithId);
-            return Promise.resolve(newResearchWithId); // Return the new Activity
+            const newResearchWithId = { ...newResearch, id: nextResearchId.value++ }; // Generate unique ID
+            //research.value.push(newResearchWithId);
+            //return Promise.resolve(newResearchWithId); // Return the new Activity
+
+            // Simulating API call
+            const response = await axios.post(
+                "http://localhost:8000/research",
+                newResearchWithId
+            );
+            const addedResearch = response.data.research; // Access the returned unit units
+            research.value.push(addedResearch);
+            return Promise.resolve(addedResearch); // Return the new unit
         } catch (err) {
             error.value = "Failed to add Research";
         } finally {
@@ -207,12 +249,19 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
-            const index = activities.value.findIndex(
-                (research) => research.id === updatedResearch.id
+            // Simulating API call
+            const response = await axios.put(
+                `http://localhost:8000/research/${updatedResearch.id}`,
+                updatedResearch
+            );
+            const upresearch = response.units.research;
+
+            const index = research.value.findIndex(
+                (research) => research.id === upresearch.id
             );
             if (index !== -1) {
-                research.value[index] = {
-                    ...updatedResearch,
+                scientificResearch.value[index] = {
+                    ...upresearch,
                 };
                 return Promise.resolve(research.value[index]); // Return the updated unit
             } else {
@@ -226,6 +275,7 @@ export const useDataStore = defineStore("dataStore", () => {
     };
 
     const getResearchById = (ResearchId) => {
+        debugger
         const result = research.value.find(
             (research) => research.id === ResearchId
         );
@@ -235,6 +285,8 @@ export const useDataStore = defineStore("dataStore", () => {
         loading.value = true;
         error.value = null;
         try {
+            await axios.delete(`http://localhost:8000/research/${researchId}`);
+
             const index = research.value.findIndex(
                 (research) => research.id === researchId
             );
@@ -250,15 +302,34 @@ export const useDataStore = defineStore("dataStore", () => {
             loading.value = false;
         }
     };
-
     const login = async (user) => {
-        debugger;
-        const response = await axios.post("http://localhost:8000/login", {
-            username: user.username,
-            password: user.password,
-        });
-        token.value = response.data.token;
+        try {
+            debugger
+            const response = await axios.post(
+                "http://localhost:8000/token",
+                new URLSearchParams(user), // Convert to URL-encoded format
+                {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                }
+            );
+            
+            token.value = response.data.access_token;
+            isLoggedIn.value = true;
+            console.log("Login successful:", token.value);
+        } catch (error) {
+            if (error.response) {
+                // send error response not print it
+                return error.response.data.detail;
+                // console.error("Login failed:", error.response.data.detail);
+            } else {
+                console.error("Error:", error.message);
+            }
+        }
     };
+
+    
     const logout = async () => {
         token.value = null;
     };

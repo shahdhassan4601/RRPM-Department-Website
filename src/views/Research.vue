@@ -4,11 +4,13 @@
             <!-- Title and Add Button -->
             <div class="d-flex align-items-center mb-4">
                 <h2 class="mb-0 me-3">Scientific Research</h2>
-                <router-link
-                    to="/research-admin"
-                    class="btn btn-success btn-sm me-2"
-                    >Add</router-link
-                >
+                <div v-if="this.researchStore.token">
+                    <router-link
+                        to="/research-admin"
+                        class="btn btn-success btn-sm me-2"
+                        >Add</router-link
+                    >
+                </div>
             </div>
 
             <!-- Search and Filter Fields -->
@@ -19,19 +21,6 @@
                     placeholder="Search..."
                     v-model="searchQuery"
                 />
-                <!-- <select
-                    class="form-select form-select-sm me-2"
-                    v-model="selectedAuthor"
-                >
-                    <option value="">Author</option>
-                    <option
-                        v-for="author in uniqueAuthors"
-                        :key="author.id"
-                        :value="author.id"
-                    >
-                        {{ author.name }}
-                    </option>
-                </select> -->
                 <select
                     class="form-select form-select-sm me-2"
                     v-model="selectedDate"
@@ -56,9 +45,9 @@
                                 Authors:
                                 <span
                                     v-for="(author, index) in research.authors"
-                                    :key="author.author_id"
+                                    :key="author.id"
                                 >
-                                    {{ author.author_name }}
+                                    {{ author.name }}
                                     <span
                                         v-if="
                                             index < research.authors.length - 1
@@ -86,7 +75,10 @@
                                 Learn more
                             </router-link>
                         </div>
-                        <div class="d-flex align-items-start">
+                        <div
+                            v-if="this.researchStore.token"
+                            class="d-flex align-items-start"
+                        >
                             <button
                                 class="btn btn-secondary btn-sm me-2"
                                 @click="editResearch(research.id)"
@@ -95,11 +87,30 @@
                             </button>
                             <button
                                 class="btn btn-danger btn-sm me-2"
-                                @click="confirmDelete(research.id)"
+                                @click="showPopupfunc(research.id)"
                             >
                                 Delete
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popup -->
+            <div v-if="showPopup" class="popup-overlay">
+                <div class="popup">
+                    <h2>Are you sure?</h2>
+                    <p>
+                        Do you really want to delete this research? This action
+                        cannot be undone.
+                    </p>
+                    <div class="popup-actions">
+                        <button class="confirm-btn" @click="deleteResearch">
+                            Yes, Delete
+                        </button>
+                        <button class="cancel-btn" @click="closePopup">
+                            Cancel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -117,6 +128,8 @@ export default {
             searchQuery: "",
             selectedAuthor: "",
             selectedDate: "newest",
+            showPopup: false,
+            researchToDeleteId: null, // ID of the research to delete
         };
     },
     setup() {
@@ -146,12 +159,7 @@ export default {
                 const matchesQuery = research.title
                     .toLowerCase()
                     .includes(this.searchQuery.toLowerCase());
-                const matchesAuthor = this.selectedAuthor
-                    ? research.authors.some(
-                          (author) => author.author_id === this.selectedAuthor
-                      )
-                    : true;
-                return matchesQuery && matchesAuthor;
+                return matchesQuery;
             });
 
             // Sort by date
@@ -179,16 +187,76 @@ export default {
                 query: { id: researchId },
             });
         },
-        confirmDelete(SR_id) {
-            if (confirm("Are you sure you want to delete this research?")) {
-                this.researchStore.deleteResearch(SR_id);
-            }
+        showPopupfunc(researchId) {
+            this.showPopup = true;
+            this.researchToDeleteId = researchId;
+        },
+        deleteResearch() {
+            this.researchStore.deleteResearch(this.researchToDeleteId);
+            this.closePopup();
+        },
+        closePopup() {
+            this.showPopup = false;
+            this.researchToDeleteId = null;
         },
     },
 };
 </script>
 
+
 <style scoped>
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.popup h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.popup-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.confirm-btn {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.cancel-btn {
+    background-color: #5bc0de;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
 .activity-card {
     background-color: #fff;
     border: 1px solid #dee2e6;

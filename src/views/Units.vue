@@ -2,9 +2,11 @@
     <div class="container my-5">
         <div class="d-flex align-items-center mb-4">
             <h1 class="me-3 mb-0">Medical Units</h1>
+            <div v-if="this.unitStore.token">
             <router-link to="/unit-admin" class="btn btn-success btn-sm"
                 >Add</router-link
             >
+        </div>
         </div>
         <div v-if="unitStore.loading">Loading units...</div>
 
@@ -18,13 +20,14 @@
                 <h5>{{ unit.name }}</h5>
                 <p><strong>Address:</strong> {{ unit.address }}</p>
                 <p>
-                    <strong> Working Hours:</strong> {{ unit.hours.from }} -
+                    <strong> Working Hours:</strong>
+                    {{ unit.hours.from_time }} -
                     {{ unit.hours.to }}
                 </p>
                 <h6><strong>Clinics:</strong></h6>
                 <ul>
                     <li v-for="clinic in unit.clinics" :key="clinic.id">
-                        {{ clinic.name }} ({{ clinic.hours.from }} -
+                        {{ clinic.name }} ({{ clinic.hours.from_time }} -
                         {{ clinic.hours.to }})
                     </li>
                 </ul>
@@ -51,14 +54,17 @@
                 <p><strong>Mobile Number:</strong> {{ unit.phone_number }}</p>
             </div>
 
-            <div class="">
+            <div v-if="this.unitStore.token" class="">
                 <button
                     @click="editUnit(unit.id)"
                     class="btn btn-secondary btn-sm me-2"
                 >
                     Edit
                 </button>
-                <button @click="showPopupfunc(unit.id)" class="btn btn-danger btn-sm">
+                <button
+                    @click="showPopupfunc(unit.id)"
+                    class="btn btn-danger btn-sm"
+                >
                     Delete
                 </button>
             </div>
@@ -71,10 +77,7 @@
                         cannot be undone.
                     </p>
                     <div class="popup-actions">
-                        <button
-                            class="confirm-btn"
-                            @click="deleteUnit()"
-                        >
+                        <button class="confirm-btn" @click="deleteUnit()">
                             Yes, Delete
                         </button>
                         <button class="cancel-btn" @click="closePopup">
@@ -100,7 +103,6 @@ export default {
         };
     },
     setup() {
-    
         const unitStore = useDataStore();
         return { unitStore };
     },

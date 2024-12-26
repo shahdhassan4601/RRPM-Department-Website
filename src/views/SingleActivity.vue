@@ -125,7 +125,7 @@
 
         <!-- Buttons Section -->
         <div class="buttons-section text-center mt-4">
-            <button class="btn btn-primary btn-sm" @click="goBack">
+            <button class="btn btn-primary btn-sm mb-3" @click="goBack">
                 Go Back
             </button>
         </div>

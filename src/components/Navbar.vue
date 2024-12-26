@@ -52,12 +52,15 @@
                 </ul>
             </nav>
             <div class="d-flex align-items-center">
-                <SignUpButton class="me-2" />
-                <div v-if="isLoggedin">
-                    <LogOutButton @click="isLoggedin = false" class="me-2" />
+                <!-- <SignUpButton class="me-2" /> -->
+                <div v-if="this.dataStore.token">
+                    <LogOutButton
+                        
+                        class="me-2"
+                    />
                 </div>
                 <div v-else>
-                    <LogInButton @click="isLoggedin = true" class="me-2" />
+                    <LogInButton class="me-2" />
                 </div>
             </div>
             <LangSwitcher
@@ -125,13 +128,21 @@
 import LogInButton from "./LogInButton.vue";
 import LogOutButton from "./LogOutButton.vue";
 import SignUpButton from "./SignUpButton.vue";
+import { useDataStore } from "../stores/dataStore";
 
 export default {
     name: "Header",
     data() {
         return {
-            isloggedin: false,
+            isLoggedIn: false,
         };
+    },
+    setup() {
+        const dataStore = useDataStore();
+        return { dataStore };
+    },
+    created() {
+        this.isLoggedIn = this.dataStore.isLoggedIn;
     },
     components: {
         LogInButton,

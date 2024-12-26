@@ -16,16 +16,70 @@
                 </div>
             </div>
 
+            <!-- Authors -->
             <div class="mb-3">
                 <label for="authors" class="form-label">Author(s)</label>
-                <input
-                    v-model="authorsInput"
-                    type="text"
-                    class="form-control"
-                    id="authors"
-                    placeholder="Enter authors separated by commas"
-                    @blur="updateAuthorsList"
-                />
+                <!-- Dropdown with all authors -->
+                 <div class="d-flex flex-wrap gap-2 align-items-center">
+                <div class="dropdown">
+                    <button
+                        class="btn btn-outline-primary dropdown-toggle"
+                        type="button"
+                        id="authorsDropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        Select Authors
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="authorsDropdown">
+                        <li
+                            v-for="author in researchData.authors"
+                            :key="author.id"
+                            class="dropdown-item"
+                            @click="toggleAuthorSelection(author)"
+                        >
+                            <input
+                                type="checkbox"
+                                :checked="isSelectedAuthor(author)"
+                                class="me-2"
+                            />
+                            {{ author.name }}
+                        </li>
+                    </ul>
+                </div>
+                <!-- Display selected authors as badges -->
+                <div class="mt- d-flex flex-wrap gap-2">
+                    <div
+                        v-for="author in selectedAuthors"
+                        :key="author.id"
+                        class="badge bg-primary"
+                    >
+                        {{ author.name }}
+                        <button
+                            type="button"
+                            class="btn-close btn-close-white ms-1"
+                            @click="removeAuthor(author)"
+                        ></button>
+                    </div>
+                </div>
+            </div>
+
+                <!-- Add new author field -->
+                <div class="input-group mt-3">
+                    <input
+                        v-model="newAuthorName"
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter new author name"
+                    />
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        @click="addNewAuthor"
+                    >
+                        Add New Author
+                    </button>
+                </div>
             </div>
 
             <div class="mb-3">
@@ -133,7 +187,7 @@
             </div>
 
             <!-- Buttons -->
-            <div class="mt-4 d-flex justify-content-between">
+            <div class="my-4 d-flex justify-content-between">
                 <button
                     type="button"
                     class="btn btn-outline-danger"
@@ -143,6 +197,7 @@
                 </button>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>
+
         </form>
     </div>
 </template>
@@ -174,6 +229,8 @@ export default {
             fileError: false,
             editIndex: null,
             authorsInput: "", // Input field value for authors
+            selectedAuthors: [],
+
         };
     },
     setup() {
@@ -181,21 +238,17 @@ export default {
         return { researchStore };
     },
     created() {
-        // الحصول على index من الـ route
+        // this.researchData.keywords = null;
         const id = parseInt(this.$route.query.id);
 
-        // التحقق إذا كان الـ index موجودا
         if (id) {
             this.researchData = this.researchStore.getResearchById(id);
         }
-        // save author.name from store to authors list of strings
-        this.authorsInput = this.researchData.authors
-            .map((author) => author.name)
-            .join(", ");
     },
 
     methods: {
         submitResearch() {
+            debugger
             const id = parseInt(this.$route.query.id);
 
             // Validate title
@@ -221,11 +274,7 @@ export default {
       Keywords: ${this.researchData.keywords.join(", ")}
     `;
 
-                // Show alert with saved research details
-                alert(
-                    `Research saved successfully! \n\nDetails:\n${researchDetails}`
-                );
-
+            
                 this.resetForm();
                 // Redirect to the Research page after saving
                 this.$router.push("/research");
@@ -279,33 +328,47 @@ export default {
             // Further processing for valid files if needed
             console.log("Valid files:", validFiles);
         },
-        updateAuthorsList() {
-            // const authorIndex = this.authors.id
-            // Split input by commas and map to objects
-            const names = this.authorsInput
-                .split(",")
-                .map((name) => name.trim());
-            this.researchData.authors = names.map((name, index) => ({
-                id: index, // Generate a unique ID for each author
-                name,
-            }));
+        toggleAuthorSelection(author) {
+            const index = this.selectedAuthors.findIndex((a) => a.id === author.id);
+            if (index === -1) {
+                this.selectedAuthors.push(author);
+            } else {
+                this.selectedAuthors.splice(index, 1);
+            }
         },
-        watch: {
-            // Keep `authorsInput` in sync when `authors` list changes
-            "researchData.authors": {
-                handler(newAuthors) {
-                    this.authorsInput = newAuthors
-                        .map((author) => author.name)
-                        .join(", ");
-                },
-                deep: true,
-            },
+        isSelectedAuthor(author) {
+            return this.selectedAuthors.find((a) => a.id === author.id);
+        },
+        removeAuthor(author) {
+            this.selectedAuthors = this.selectedAuthors.filter(
+                (a) => a.id !== author.id
+            );
+        },
+        addNewAuthor() {
+            if (this.newAuthorName.trim()) {
+                const newId = this.researchData.authors.length + 1;
+                const newAuthor = { id: newId, name: this.newAuthorName.trim() };
+                this.researchData.authors.push(newAuthor);
+                this.selectedAuthors.push(newAuthor);
+                this.newAuthorName = "";
+            } else {
+                alert("Author name cannot be empty.");
+            }
         },
     },
 };
 </script>
 
 <style scoped>
+.dropdown-menu {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.badge {
+    display: flex;
+    align-items: center;
+}
 .activity-card {
     background-color: #fff;
     border: 1px solid #dee2e6;

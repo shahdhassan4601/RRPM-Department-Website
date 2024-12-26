@@ -19,12 +19,11 @@
                                 {{ day }}
                             </li>
                         </ul>
-                        <p><strong>Business hours:</strong></p>
-                        <ul>
-                            <li v-for="(hours, day) in unit.hours" :key="day">
-                                {{ day }}: {{ hours }}
-                            </li>
-                        </ul>
+                        <p><strong>Business hours:</strong>
+
+                            <span class="ms-2">
+                                {{ unit.hours.from_time  }} : {{  unit.hours.to }}</span>
+                    </p>
                     </div>
                 </div>
             </div>

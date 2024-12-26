@@ -27,7 +27,7 @@
             <div v-if="errors.unit?.address" class="text-danger">
                 Address is required
             </div>
-            
+
             <label class="form-label mt-3">Phone Number</label>
             <input
                 v-model="unit.phone_number"
@@ -65,7 +65,7 @@
             <label class="form-label">Unit working hours:</label>
             <div class="input-group">
                 <input
-                    v-model="unit.hours.from"
+                    v-model="unit.hours.from_time"
                     type="time"
                     class="form-control"
                     :class="{ 'is-invalid': errors.unit?.hours?.from }"
@@ -107,7 +107,7 @@
                 <label class="form-label">Working hours</label>
                 <div class="input-group">
                     <input
-                        v-model="clinic.hours.from"
+                        v-model="clinic.hours.from_time"
                         type="time"
                         class="form-control"
                         :class="{ 'is-invalid': errors.clinic?.hours?.from }"
@@ -148,92 +148,63 @@
                 </button>
             </div>
         </div>
-    </div>
 
-        <!-- Clinics Table -->
-        <table class="table table-bordered mt-4">
-            <thead>
-                <tr>
-                    <th>Clinic Name</th>
-                    <th>Working Hours</th>
-                    <th>Services</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(clinic, index) in unit.clinics" :key="index">
-                    <td>{{ clinic.name }}</td>
-                    <td>{{ clinic.hours.from }} - {{ clinic.hours.to }}</td>
-                    <td>{{ clinic.services }}</td>
-                    <td>
-                        <button
-                            @click="editClinic(clinic.id)"
-                            class="btn btn-warning btn-sm"
-                        >
-                            Edit
-                        </button>
-                        <button
-                            @click="confirmDeleteclinic(clinic.id)"
-                            class="btn btn-danger btn-sm"
-                        >
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
 
-        <!-- Confirmation Popup -->
-        <div v-if="showPopup" class="popup-overlay">
-            <div class="popup">
-                <h2>Are you sure?</h2>
-                <p>
-                    Do you really want to delete this clinic? This action cannot
-                    be undone.
-                </p>
-                <div class="popup-actions">
-                    <button class="confirm-btn" @click="deleteClinic()">
-                        Yes, Delete
+    <!-- Clinics Table -->
+    <table class="table table-bordered mt-4">
+        <thead v-if="unit.clinics.length > 0">
+            <tr>
+                <th>Clinic Name</th>
+                <th>Working Hours</th>
+                <th>Services</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(clinic, index) in unit.clinics" :key="index">
+                <td>{{ clinic.name }}</td>
+                <td>{{ clinic.hours.from_time }} - {{ clinic.hours.to }}</td>
+                <td>{{ clinic.services }}</td>
+                <td>
+                    <button
+                        @click="editClinic(clinic.id)"
+                        class="btn btn-secondary btn-sm"
+                    >
+                        Edit
                     </button>
-                    <button class="cancel-btn" @click="closePopup">
-                        Cancel
+                    <button
+                        @click="confirmDeleteclinic(clinic.id)"
+                        class="btn btn-danger btn-sm"
+                    >
+                        Delete
                     </button>
-                </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Confirmation Popup -->
+    <div v-if="showPopup" class="popup-overlay">
+        <div class="popup">
+            <h2>Are you sure?</h2>
+            <p>
+                Do you really want to delete this clinic? This action cannot be
+                undone.
+            </p>
+            <div class="popup-actions">
+                <button class="confirm-btn" @click="deleteClinic()">
+                    Yes, Delete
+                </button>
+                <button class="cancel-btn" @click="closePopup">Cancel</button>
             </div>
         </div>
-
-        <!-- Unit Controls -->
-        <div class="mt-4">
-            <label class="form-label">Unit working hours:</label>
-            <div class="input-group">
-                <input
-                    v-model="unit.hours.from"
-                    type="time"
-                    class="form-control"
-                    :class="{ 'is-invalid': errors.unit?.hours?.from }"
-                />
-                <span class="input-group-text">to</span>
-                <input
-                    v-model="unit.hours.to"
-                    type="time"
-                    class="form-control"
-                    :class="{ 'is-invalid': errors.unit?.hours?.to }"
-                />
-            </div>
-            <div v-if="errors.unit?.hours?.from" class="text-danger">
-                Start time is required
-            </div>
-            <div v-if="errors.unit?.hours?.to" class="text-danger">
-                End time is required
-            </div>
-
-            <div class="mt-3">
-            <button @click="addUnit" class="btn btn-primary">Save</button>
-            <button @click="clearFields" class="btn btn-secondary">
-                Clear
-            </button>
-        </div>
     </div>
+
+    <div class="d-flex justify-content-between">
+        <button @click="clearFields" class="btn btn-primary">Clear</button>
+        <button @click="addUnit" class="btn btn-primary">Save</button>
+    </div>
+</div>
 </template>
 
 <script>
@@ -304,8 +275,8 @@ export default {
                 this.errors.clinic.name = true;
                 hasError = true;
             }
-            if (!this.clinic.hours.from) {
-                this.errors.clinic.hours.from = true;
+            if (!this.clinic.hours.from_time) {
+                this.errors.clinic.hours.from_time = true;
                 hasError = true;
             }
 
@@ -357,9 +328,9 @@ export default {
                 this.errors.unit.working_days = true;
                 hasError = true;
             }
-            if (!this.unit.hours.from) {
+            if (!this.unit.hours.from_time) {
                 this.errors.unit.hours = this.errors.unit.hours || {};
-                this.errors.unit.hours.from = true;
+                this.errors.unit.hours.from_time = true;
                 hasError = true;
             }
 
@@ -380,8 +351,8 @@ export default {
         },
 
         confirmDeleteclinic(id) {
-            this.showPopup = true;   
-            this.clinicToDeleteId = id;    
+            this.showPopup = true;
+            this.clinicToDeleteId = id;
             this.deleteType = "clinic";
         },
         deleteClinic() {
@@ -389,9 +360,9 @@ export default {
                 const indexToDelete = this.unit.clinics.findIndex(
                     (c) => c.id === this.clinic.id
                 );
-                this.unit.clinics.splice(indexToDelete, 1); 
-                this.clinicToDeleteId = null; 
-                this.showPopup = false; 
+                this.unit.clinics.splice(indexToDelete, 1);
+                this.clinicToDeleteId = null;
+                this.showPopup = false;
                 this.deleteType = null;
             }
         },
@@ -527,5 +498,23 @@ button {
 /* تعديل عرض النص داخل الإطار */
 .clinic-working-hours .input-group-text {
     padding: 5px 10px;
+}
+
+.btn-success {
+    background-color: #20c997 !important; /* Light green */
+    border-color: #20c997 !important;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+.btn-secondary {
+    background-color: #4f678d !important; /* Blue */
+    border-color: #4f678d !important;
+}
+.btn-warning {
+    background-color: #126782;
+
 }
 </style>

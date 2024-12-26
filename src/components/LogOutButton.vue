@@ -12,8 +12,8 @@
     },
     methods: {
       handleClick() {
-        this.$router.push("/");
-        this.dataStore.logout();
+          this.dataStore.logout();
+          this.$router.push("/");
       },
     },
   };

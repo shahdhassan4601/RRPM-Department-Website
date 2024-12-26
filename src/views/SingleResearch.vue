@@ -4,7 +4,7 @@
         <div class="row mb-3 justify-content-between align-items-center">
             <div class="col-12">
                 <h1 class="research-title">
-                    {{ getTranslatedData(research.title) }}
+                    {{ research.title }}
                 </h1>
             </div>
         </div>
@@ -15,14 +15,14 @@
                 <span class="author-name m-2"
                         v-for="(author) in 
                             research.authors"
-                        :key="author.author_id"
+                        :key="author.id"
                     >
-                        {{ "Author(s): " + author.author_name }}
+                        {{ "Author(s): " + author.name }}
                     </span>
             </div>
             <div class="col-md-6 text-md-end">
                 <span class="publish-date">{{ "Published: " +
-                    getTranslatedData(research.publicationDate)
+                    research.publicationDate
                 }}</span>
             </div>
         </div>
@@ -43,7 +43,7 @@
         <div class="row">
             <div class="col-12">
                 <p class="research-content">
-                    {{ getTranslatedData(research.content) }}
+                    {{ research.content }}
                 </p>
             </div>
         </div>
@@ -58,7 +58,7 @@
                         :key="index"
                         class="keyword-badge"
                     >
-                        {{ "# " + tag.keyword }}
+                        {{ "# " + tag }}
                     </span>
                 </div>
             </div>
@@ -83,6 +83,11 @@
                     <h6>{{ getTranslatedData(related.title) }}</h6>
                 </div>
             </div>
+        </div>
+        <div class="buttons-section text-center mt-4">
+            <button class="btn btn-primary btn-sm mb-3" @click="goBack">
+                Go Back
+            </button>
         </div>
     </div>
 </template>
@@ -109,6 +114,7 @@ export default {
         return { researchStore };
     },
     created() {
+        debugger
         const researchId = parseInt(this.$route.params.id); // Get the research ID from the route params
         // Find the research in the scientificResearch array by ID
         if (researchId) {
@@ -131,6 +137,9 @@ export default {
                 name: "SingleResearch",
                 params: { id: related.id },
             });
+        },
+        goBack() {
+            this.$router.push("/research"); // Navigate back to the activities list
         },
     },
 };

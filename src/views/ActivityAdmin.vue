@@ -119,27 +119,82 @@
             </div>
 
             <!-- Status -->
-            <div class="mt-3">
-                <label for="status" class="form-label">Status</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    id="status"
-                    v-model="formData.status"
-                    placeholder="Enter activity status (e.g. Planned, In Progress, Completed)"
-                />
-            </div>
+            <div class="d-flex justify-content-between">
+                <div class="mt-3 me-3">
+                    <label for="status" class="form-label">Status</label>
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-secondary dropdown-toggle w-100"
+                            type="button"
+                            id="statusDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            {{ formData.status || "Select status" }}
+                        </button>
+                        <ul
+                            class="dropdown-menu"
+                            aria-labelledby="statusDropdown"
+                        >
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="#"
+                                    @click="formData.status = 'upcoming'"
+                                    >Upcoming</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="#"
+                                    @click="formData.status = 'ongoing'"
+                                    >Ongoing</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="#"
+                                    @click="formData.status = 'completed'"
+                                    >Completed</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-            <!-- Unit -->
-            <div class="mt-3">
-                <label for="unit" class="form-label">Unit</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    id="unit"
-                    v-model="formData.unit"
-                    placeholder="Enter unit name"
-                />
+                <!-- Unit -->
+                <div class="mt-3 w-50 me-3">
+                    <label for="status" class="form-label">Unit</label>
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-secondary dropdown-toggle"
+                            type="button"
+                            id="unitDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            {{ formData.unit || "Select a unit" }}
+                        </button>
+                        <ul
+                            class="dropdown-menu"
+                            aria-labelledby="unitDropdown"
+                        >
+                            <li
+                                v-for="unit in activityStore.units"
+                                :key="unit.id"
+                            >
+                                <a
+                                    class="dropdown-item"
+                                    href="#"
+                                    @click="formData.unit = unit.name"
+                                    >{{ unit.name }}</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <!-- Upload and Unit -->
@@ -297,25 +352,23 @@ export default {
                     this.activityStore.addActivity(this.formData);
                 }
 
-
                 const activityDetails = `
-      Title: ${this.formData.title}
-      Start Date: ${this.formData.startDate}
-      End Date: ${this.formData.endDate}
-      Location: ${this.formData.location}
-      Status: ${this.formData.status}
-      Unit: ${this.formData.unit}
-      Keywords: ${this.formData.keywords ? this.formData.keywords.join(", ") : []}
-      Summary: ${this.formData.summary}
-    `;
+                Title: ${this.formData.title}
+                Start Date: ${this.formData.startDate}
+                End Date: ${this.formData.endDate}
+                Location: ${this.formData.location}
+                Status: ${this.formData.status}
+                Unit: ${this.formData.unit}
+                Keywords: ${
+                    this.formData.keywords
+                        ? this.formData.keywords.join(", ")
+                        : []
+                }
+                Summary: ${this.formData.summary}
+                `;
 
-                // إظهار alert مع تفاصيل النشاط المحفوظ
-                alert(
-                    `Activity saved successfully!\n\nDetails:\n${activityDetails}`
-                );
-
-                this.resetForm(); // إعادة تعيين النموذج بعد الحفظ
-                // this.$router.push("/Activities"); // إعادة التوجيه إلى صفحة الأنشطة
+                this.resetForm();
+                this.$router.push("/activities");
             } else {
                 alert("Please fill out the required fields.");
             }

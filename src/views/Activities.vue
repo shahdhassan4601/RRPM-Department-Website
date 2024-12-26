@@ -4,7 +4,13 @@
         <main class="container py-5">
             <div class="d-flex align-items-center mb-4">
                 <h2 class="mb-0 me-3">General Activities</h2>
-                <router-link to="/activity-admin" class="btn btn-success btn-sm me-2">Add</router-link>
+                <div v-if="this.activityStore.token">
+                    <router-link 
+                        to="/activity-admin"
+                        class="btn btn-success btn-sm me-2"
+                        >Add</router-link
+                    >
+                </div>
             </div>
 
             <!-- Search and Filter Fields in the Same Line -->
@@ -25,7 +31,13 @@
                     aria-label="Filter by Status"
                 >
                     <option value="">Status</option>
-                    <option v-for="status in statuses" :key="status" :value="status">{{ status }}</option>
+                    <option
+                        v-for="status in statuses"
+                        :key="status"
+                        :value="status"
+                    >
+                        {{ status }}
+                    </option>
                 </select>
 
                 <!-- Sorting Options -->
@@ -41,18 +53,31 @@
             </div>
 
             <div class="row g-4">
-                <div class="col-12" v-for="activity in filteredActivities" :key="activity.id">
+                <div
+                    class="col-12"
+                    v-for="activity in filteredActivities"
+                    :key="activity.id"
+                >
                     <div class="activity-card d-flex justify-content-between">
                         <div>
                             <h5 class="d-flex align-items-center">
                                 {{ activity.title }}
-                                <span :class="['status-badge', 'status-' + activity.status]" class="ms-2 me-2">{{ activity.status }}</span>
+                                <span
+                                    :class="[
+                                        'status-badge',
+                                        'status-' + activity.status,
+                                    ]"
+                                    class="ms-2 me-2"
+                                    >{{ activity.status }}</span
+                                >
                             </h5>
                             <p class="mb-1">
                                 <i class="bi bi-calendar"></i>
-                                {{ activity.startDate }} - {{ activity.endDate }} |
+                                {{ activity.startDate }} -
+                                {{ activity.endDate }} |
                                 <i class="bi bi-clock"></i>
-                                {{ activity.startTime }} - {{ activity.endTime }}
+                                {{ activity.startTime }} -
+                                {{ activity.endTime }}
                             </p>
                             <p class="mb-1">
                                 <i class="bi bi-geo-alt"></i>
@@ -60,20 +85,54 @@
                             </p>
                             <p>{{ activity.summary }}</p>
                             <!-- Learn More Button for Each Activity -->
-                            <router-link :to="{ name: 'SingleActivity', params: { id: activity.id }}" class="text-decoration-none">
+                            <router-link
+                                :to="{
+                                    name: 'SingleActivity',
+                                    params: { id: activity.id },
+                                }"
+                                class="text-decoration-none"
+                            >
                                 Learn more
                             </router-link>
                         </div>
-                        <div class="d-flex align-items-start">
-                            <button class="btn btn-secondary btn-sm me-2" @click="editActivity(activity.id)">
+                        <div v-if="this.activityStore.token" class="d-flex align-items-start">
+                            <button
+                                class="btn btn-secondary btn-sm me-2"
+                                @click="editActivity(activity.id)"
+                            >
                                 Edit
                             </button>
-                            <button class="btn btn-danger btn-sm me-2" @click="confirmDelete(activity.id)">
+                            <button
+                                class="btn btn-danger btn-sm me-2"
+                                @click="showPopupfunc(activity.id)"
+                            >
                                 Delete
                             </button>
                         </div>
-                        <!-- <img :src="activity.media.length > 0 && activity.media[0]?.path ? activity.media[0].path : 'https://via.placeholder.com/150'" alt="Activity Image" class="img-fluid" /> -->
-                        <img :src="'https://via.placeholder.com/150'" alt="Activity Image" class="img-fluid" />
+                        <img
+                            :src="'https://via.placeholder.com/150'"
+                            alt="Activity Image"
+                            class="img-fluid"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popup -->
+            <div v-if="showPopup" class="popup-overlay">
+                <div class="popup">
+                    <h2>Are you sure?</h2>
+                    <p>
+                        Do you really want to delete this activity? This action
+                        cannot be undone.
+                    </p>
+                    <div class="popup-actions">
+                        <button class="confirm-btn" @click="deleteActivity()">
+                            Yes, Delete
+                        </button>
+                        <button class="cancel-btn" @click="closePopup">
+                            Cancel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -82,7 +141,7 @@
 </template>
 
 <script>
-import { useDataStore } from '../stores/dataStore';
+import { useDataStore } from "../stores/dataStore";
 
 export default {
     name: "GeneralActivities",
@@ -92,6 +151,8 @@ export default {
             searchQuery: "",
             statusFilter: "",
             sortMode: "newest", // Default sort mode
+            showPopup: false,
+            activityToDeleteId: null,
         };
     },
     setup() {
@@ -100,7 +161,6 @@ export default {
     },
     computed: {
         filteredActivities() {
-            // debugger
             // Filter activities based on search query and status
             let filtered = this.activityStore.activities.filter((activity) => {
                 const matchesQuery = activity.title
@@ -114,9 +174,13 @@ export default {
 
             // Sort activities based on the selected sort mode (Newest or Oldest)
             if (this.sortMode === "newest") {
-                filtered.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+                filtered.sort(
+                    (a, b) => new Date(b.startDate) - new Date(a.startDate)
+                );
             } else if (this.sortMode === "oldest") {
-                filtered.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+                filtered.sort(
+                    (a, b) => new Date(a.startDate) - new Date(b.startDate)
+                );
             }
 
             return filtered;
@@ -130,14 +194,23 @@ export default {
                 query: { id: activityId },
             });
         },
-        confirmDelete(activityId) {
-            if (confirm("Are you sure you want to delete this activity?")) {
-                this.activityStore.deleteActivity(activityId);
-            }
+        showPopupfunc(activityId) {
+            this.showPopup = true;
+            this.activityToDeleteId = activityId;
+        },
+        deleteActivity() {
+            this.activityStore.deleteActivity(this.activityToDeleteId);
+            this.showPopup = false;
+            this.activityToDeleteId = null;
+        },
+        closePopup() {
+            this.showPopup = false;
+            this.activityToDeleteId = null;
         },
     },
 };
 </script>
+
 
 <style scoped>
 .activity-card {
@@ -195,4 +268,65 @@ export default {
     display: flex;
     align-items: center;
 }
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.popup h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.popup-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.confirm-btn {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.cancel-btn {
+    background-color: #5bc0de;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.activity-card {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 </style>

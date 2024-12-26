@@ -4,10 +4,10 @@
     <Header />
             <main>
             <!-- Language Switcher -->
-            <LangSwitcher
+            <!-- <LangSwitcher
                 :currentLang="selectedLang"
                 @change-language="changeLanguage"
-            />
+            /> -->
 
             <!-- Vue Router will dynamically render the correct page here -->
             <router-view :selectedLang="selectedLang" />

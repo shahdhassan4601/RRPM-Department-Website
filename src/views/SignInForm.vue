@@ -96,6 +96,7 @@
 
 <script>
 import { useDataStore } from "../stores/dataStore";
+import { is } from "@babel/types";
 export default {
     name: "LoginPage",
     data() {
@@ -112,6 +113,7 @@ export default {
         const dataStore = useDataStore();
         return { dataStore };
     },
+
     methods: {
         togglePasswordVisibility() {
             this.showPassword = !this.showPassword;
@@ -142,10 +144,22 @@ export default {
             this.errorMessage = "";
 
             try {
-                await this.dataStore.login(user);
-                this.$router.push("/");
+                debugger;
+                const user = {
+                    username: this.user.username,
+                    password: this.user.password,
+                };
+                const response = await this.dataStore.login(user);
+                if(response != "Incorrect username or password")
+                    this.$router.push("/");
+                else
+                    this.errorMessage = "Invalid username or password, please try again.";
+                console.log(response);
+
+                // this.dataStore.isloggedin = true
             } catch (error) {
-                this.errorMessage = "Invalid credentials, please try again.";
+                this.errorMessage =
+                    "Invalid username or password, please try again.";
             } finally {
                 this.loading = false;
             }
