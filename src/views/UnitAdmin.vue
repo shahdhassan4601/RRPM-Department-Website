@@ -148,6 +148,7 @@
                 </button>
             </div>
         </div>
+    </div>
 
         <!-- Clinics Table -->
         <table class="table table-bordered mt-4">
