@@ -1,0 +1,30 @@
+body {
+  background-color: #F8F9FA; 
+  color: #033954;
+}
+main {
+  background-color: #FFF; 
+}
+.unit-card, .activity-card, .insight-card {
+  border: 1px solid #219EBC;
+  border-radius: 10px;
+  background-color: #FFF;
+}
+button, .btn {
+  background-color: #FD9E02;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background-color: #FFB703; 
+}
