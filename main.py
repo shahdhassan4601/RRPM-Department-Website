@@ -1,10 +1,23 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
 import uvicorn
-from fastapi import HTTPException
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+import jwt
+from datetime import datetime, timedelta
+from fastapi.logger import logger
+from typing import Dict
+
+
+# Secret key and algorithm for JWT encoding/decoding
+SECRET_KEY = "mysecretkey"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# OAuth2PasswordBearer is used to extract the token from the Authorization header
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Models for data representation
 class Hours(BaseModel):
@@ -207,9 +220,53 @@ mock_research: List[Research] = [
     ),
 ]
 
-mock_admins: List[Admin] = [
-    Admin(username="admin", password="adminadmin")
-]
+# Mock users (for demonstration purposes)
+
+# Utility function to create JWT tokens
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+# Endpoint to authenticate and get a JWT token
+
+mock_admins: Dict[str, str] = {
+    "admin": "adminadmin",  # Username and password combination
+    "user": "pass456"
+}
+
+# Mock function to hash passwords (if you use actual hashing in the future)
+def fake_hash_password(password: str) -> str:
+    # Replace this with real hashing logic (e.g., bcrypt) if needed
+    return password  # In this example, we're using plain text for simplicity
+
+
+@app.post("/token")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    print(f"Username: {form_data.username}")
+    print(f"Password: {form_data.password}")
+
+    if form_data.username not in mock_admins:
+        print("Username not found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    print(mock_admins[form_data.username])
+    print(form_data.password)
+
+    if mock_admins[form_data.username] != form_data.password:
+        print("Password does not match")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return {"access_token": create_access_token({"sub": form_data.username}), "token_type": "bearer"}
 
 # Endpoints
 @app.get("/units")
